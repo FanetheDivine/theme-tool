@@ -2,6 +2,9 @@
 const config = {
   plugins: {
     tailwindcss: {},
+    'postcss-increase-specificity': {
+      repeat: 1,
+    }
   },
 };
 
