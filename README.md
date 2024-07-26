@@ -227,3 +227,35 @@ Map
     }
 }
 ```
+## 使用主题
+利用@/utils/theme/index.ts导出的资源使用和编辑主题
+### 将组件包裹在主题上下文中
+在根布局中
+```tsx
+// app/layout.tsx
+import { ThemeProvider } from "@/utils/theme";
+
+// 组件内
+  <ThemeProvider>
+    {props.children}
+  </ThemeProvider>
+```
+### 获取主题信息
+```tsx
+import { useTheme } from "@/utils/theme";
+
+// 组件内
+    const [themeInfo, edit, setThemeInfo]=useTheme()
+    if(!themeInfo){
+        return null
+    }
+    themeInfo.theme.//...
+    edit.theme.//...
+    edit.themeMap.//...
+    setThemeInfo(()=>newThemeInfo) // 完全替换当前的主题信息
+```
+### 实用函数
+* `getThemeVars`
+  `<T=any>(theme: Theme, themeMap: ThemeMap)=>T`
+  取得主题变量
+

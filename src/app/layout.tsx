@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { FC, PropsWithChildren } from "react";
 import { AntdProvider } from "@/lib/AntdProvider";
+import { ThemeProvider } from "@/utils/theme";
 
 
 export const metadata: Metadata = {
@@ -13,7 +14,9 @@ const RootLayout: FC<PropsWithChildren> = props => {
     <html lang="zh-CN">
       <body>
         <AntdProvider>
-          {props.children}
+          <ThemeProvider>
+            {props.children}
+          </ThemeProvider>
         </AntdProvider>
       </body>
     </html>
