@@ -1,3 +1,7 @@
+import { enableMapSet, produce } from "immer"
+
+enableMapSet()
+
 /** 主题元 */
 export type ThemeItem = {
   /** 主题元描述 */
@@ -53,17 +57,19 @@ export function changeThemeItem(theme: Theme, themeEditRecorder: ThemeEditRecord
 
 /** 取得应用变更后的主题 */
 export function getEditedTheme(theme: Theme, themeEditRecorder: ThemeEditRecorder): Theme {
-  const editedTheme: Theme = new Map<string, ThemeItem>(theme.entries())
-  themeEditRecorder.entries().forEach(([name, record]) => {
-    if (record.type === 'delete') {
-      editedTheme.delete(name)
-    } else if (record.type === 'add') {
-      editedTheme.set(name, record.value)
-    } else if (record.type === 'change') {
-      if (editedTheme.has(name)) {
-        editedTheme.get(name)!.value = record.value
+  const editedTheme: Theme = produce(theme, draft => {
+    themeEditRecorder.entries().forEach(([name, record]) => {
+      if (record.type === 'delete') {
+        draft.delete(name)
+      } else if (record.type === 'add') {
+        draft.set(name, record.value)
+      } else if (record.type === 'change') {
+        if (draft.has(name)) {
+          draft.get(name)!.value = record.value
+        }
       }
-    }
+    })
   })
+
   return editedTheme
 }
