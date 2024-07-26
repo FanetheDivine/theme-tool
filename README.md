@@ -58,13 +58,13 @@ export type ThemeEditRecorder = Map<string, ThemeEdit>
 ##### 实用函数
 * `addThemeItem`  
   `(themeEditRecorder: ThemeEditRecorder, name: string, value: ThemeItem)=>void`  
-  向主题变更加入一个主题元.这个函数会修改参数`themeEditRecorder`
+  创建或替换与`name`同名的主题元.这个函数会修改参数`themeEditRecorder`
 * `deleteThemeItem`  
   `(theme: Theme, themeEditRecorder: ThemeEditRecorder, name: string)=>void`  
-  从主题变更中按名称删除一个主题元.这个函数会修改参数`themeEditRecorder`.
+  删除与`name`同名的主题元.这个函数会修改参数`themeEditRecorder`.
 * `changeThemeItem`  
   `(theme: Theme, themeEditRecorder: ThemeEditRecorder, name: string, value: ThemeItem['value'])=>void`  
-  按名称修改主题变更中的主题元.这个函数会修改参数`themeEditRecorder`.
+  修改与`name`同名的主题元.这个函数会修改参数`themeEditRecorder`.
 * `getEditedTheme`
   `(theme: Theme, themeEditRecorder: ThemeEditRecorder)=>Theme`
   取得应用变更后的主题

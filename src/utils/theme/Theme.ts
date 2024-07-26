@@ -20,7 +20,7 @@ export type ThemeEdit = { type: 'add', value: ThemeItem } | { type: 'delete' } |
 /** 主题变更 */
 export type ThemeEditRecorder = Map<string, ThemeEdit>
 
-/** 向主题变更加入一个主题元.这个函数会修改参数`themeEditRecorder`. */
+/** 创建或替换与`name`同名的主题元.这个函数会修改参数`themeEditRecorder`. */
 export function addThemeItem(themeEditRecorder: ThemeEditRecorder, name: string, value: ThemeItem) {
   if (!isLegalThemeItemName(name)) {
     throw new Error(`'${name}'不是合法主题元名称`)
@@ -28,7 +28,7 @@ export function addThemeItem(themeEditRecorder: ThemeEditRecorder, name: string,
   themeEditRecorder.set(name, { type: 'add', value })
 }
 
-/** 从主题变更中按名称删除一个主题元.这个函数会修改参数`themeEditRecorder`. */
+/** 删除与`name`同名的主题元.这个函数会修改参数`themeEditRecorder`. */
 export function deleteThemeItem(theme: Theme, themeEditRecorder: ThemeEditRecorder, name: string) {
   if (theme.has(name)) {
     themeEditRecorder.set(name, { type: 'delete' })
@@ -37,7 +37,7 @@ export function deleteThemeItem(theme: Theme, themeEditRecorder: ThemeEditRecord
   }
 }
 
-/** 按名称修改主题变更中的主题元.这个函数会修改参数`themeEditRecorder`. */
+/** 修改与`name`同名的主题元.这个函数会修改参数`themeEditRecorder`. */
 export function changeThemeItem(theme: Theme, themeEditRecorder: ThemeEditRecorder, name: string, value: ThemeItem['value']) {
   if (themeEditRecorder.has(name)) {
     const record = themeEditRecorder.get(name)!
