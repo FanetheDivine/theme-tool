@@ -9,7 +9,7 @@ graph TD
 * 主题和映射可以分别变更,并选择是否应用变更
 * 变更包括主题和映射增、删、改
 ## 类型设计
-### 主题元和主题 `@/utils/theme/Theme.ts`  
+### 主题 `@/utils/theme/Theme.ts`  
 主题是名称与主题元的映射关系.主题元是对应名称所指示的描述和值.  
 ```ts
 /** 主题元 */
@@ -25,8 +25,8 @@ type Theme = Map<string, ThemeItem>
 ```
 #### 约定
 * 主题元名称  
-  合法名称必须经过正则表达式`/^@([a-z]+-)*[a-z]+$/`的校验.'@'开头,后续是'-'隔开的小写字母,例如`@primary-color`.导出函数`isLegalThemeItemName`用于判断名称是否合法.
-* `ThemeItem['value']`的解释
+  合法名称必须经过正则表达式`/^@([a-z]+-)*[a-z]+$/`的校验.'@'开头,后续是'-'隔开的小写字母,例如`@primary-color`.
+* 对`ThemeItem['value']`的解释  
   value为字符串时:如果value是合法rgba颜色,那么它将被识别为颜色;否则作为普通字符串处理.
 #### 示例
 ```ts
@@ -49,13 +49,16 @@ export type ThemeEditRecorder = Map<string, ThemeEdit>
 ```
 ##### 主题变更的约定
 * 映射的key是合法主题元名称,但不必包含在主题中.
-* 对变更的解释
+* 对变更的解释  
   假设存在变更`key => { type, value }`
   - 若type为'delete',则主题中同名主题元被视为删除;
   - 若type为'change'且key在主题中,则value被视为该主题元的新值;
   - 若type为'add'且key在主题中,视为同名主题元被value完全替换;
   - 若type为'add'且key不在主题中,则视作主题中增加映射`key => value`.
 ##### 实用函数
+* `isLegalThemeItemName`
+  `(name: string)=>Boolean`
+  是否是合法主题元名称
 * `addThemeItem`  
   `(themeEditRecorder: ThemeEditRecorder, name: string, value: ThemeItem)=>void`  
   创建或替换与`name`同名的主题元.这个函数会修改参数`themeEditRecorder`
@@ -86,7 +89,7 @@ Map
     '@title-font-size' => { desc:'文本主字号', value:24, unit:'px', type:'integer'}
 }
 ```
-### 属性映射和主题映射 `@utils/theme/ThemeMap.ts`
+### 主题映射 `@utils/theme/ThemeMap.ts`
 主题映射是主题变量的属性与生成结果的映射.生成结果可以是属性映射,也可以是具有下级结果的子映射
 ```ts
 /** 属性映射 */
