@@ -26,6 +26,8 @@ type Theme = Map<string, ThemeItem>
 #### 约定
 * 主题元名称  
   合法名称必须经过正则表达式`/^@([a-z]+-)*[a-z]+$/`的校验.'@'开头,后续是'-'隔开的小写字母,例如`@primary-color`.
+* 对主题元名称的拓展  
+  符合正则表达式`/^@([a-z]+-)*[a-z]+(-G[0-9])?(-A[0-9]{1,3})?$/`的字符串被视为合法主题元的拓展.以`@primary-color-G3-A100`为例,它的含义是以`@primary-color`为主色生成的系列色的第3个颜色,且透明度为100.
 * 对`ThemeItem['value']`的解释  
   value为字符串时:如果value是合法rgba颜色,那么它将被识别为颜色;否则作为普通字符串处理.
 #### 示例
@@ -71,6 +73,9 @@ export type ThemeEditRecorder = Map<string, ThemeEdit>
 * `getEditedTheme`
   `(theme: Theme, themeEditRecorder: ThemeEditRecorder)=>Theme`
   取得应用变更后的主题
+* `getInfoFromExtendThemeItemName`
+  `(name: string)=>null|{ themeItemName: string; level: number; opacity: number; }`
+  从拓展主题名中获取信息
 ##### 主题变更示例
 变更
 ```ts
@@ -118,8 +123,6 @@ type ThemeMap = Map<string, PropertyMap | SubThemeMap>
   - 若value是合法rgba颜色,则它被解释为颜色值;
   - 若value是普通字符串或数字,以value作为此属性的值;
   - value是数组时,它的每一项分别按照上述规则解释后重新组合为数组.
-* 对主题元名称的拓展
-  符合正则表达式`/^@([a-z]+-)*[a-z]+(-G\d+)?(-A\d+)?$/`被视为合法主题元的拓展.以`@primary-color-G3-A100`为例,它的含义是以`@primary-color`为主色生成的系列色的第3个颜色,且透明度为100.
 #### 示例
 ```ts
 Map

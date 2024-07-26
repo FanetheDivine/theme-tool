@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/colors": "^7.1.0",
     "@ant-design/nextjs-registry": "^1.0.0",
     "antd": "^5.19.3",
     "immer": "^10.1.1",

@@ -73,3 +73,24 @@ export function getEditedTheme(theme: Theme, themeEditRecorder: ThemeEditRecorde
 
   return editedTheme
 }
+
+/** 从拓展主题名中获取信息 
+ * @returns 返回null表明是普通字符串,否则返回信息
+*/
+export function getInfoFromExtendThemeItemName(name: string) {
+  const res = name.match(/^(@([a-z]+-)*[a-z]+)(-G([0-9]))?(-A([0-9]{1,3}))?$/)
+  if (!res) {
+    return null
+  }
+  const themeItemName = res[1]
+  const level = Number(res[4] ?? 5)
+  const opacity = Number(res[6] ?? 100)
+  return {
+    /** 合法主题元名称 */
+    themeItemName,
+    /** 在色阶中的索引 */
+    level,
+    /** 透明度(0-100) */
+    opacity,
+  }
+}
