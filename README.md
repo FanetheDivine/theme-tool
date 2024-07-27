@@ -171,7 +171,7 @@ type ThemeMapEditRecorder = Map<string, ThemeMapEdit>
   - 若type为'change'且key的目标是属性映射,这个属性映射的的值被value替换
   - 若type为'descChange'且key的目标在映射中,这个属性映射的的desc被desc替换
   - 若type为'add'且key的目标在映射中,视为key的目标被value完全替换
-  - 若type为'add'且key的目标仅最后一部分索引不在映射中,视为以value创建新映射.(例如'example.Title1'会创建新映射,而'example1.Title1'则不会)
+  - 若type为'add',key去除最后一部分索引后指示的目标是由下级结构的子映射,则在此子映射下以value创建新映射.(例如'example.Title1'会创建新映射,而'example1.Title1',''version'.'example'则不会,'example'指示的目标是子映射而非属性映射)
 ##### 映射变更示例
 变更
 ```ts

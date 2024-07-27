@@ -10,7 +10,7 @@ const initValue = {
     ['@a', { desc: 'desc', value: [1, ['a']] }]
   ]),
   themeMap: new Map([
-    ['example', { desc: 'example', value: ['t', ['@a', '@b']] }],
+    ['example', { desc: 'example', value: ['t', ['@a', '@b']] }]
   ])
 }
 
@@ -45,8 +45,14 @@ const Page: FC = () => {
         <Button onClick={() => edit.theme.undo()}>撤销主题更改</Button>
       </div>
       <div>
-        <Button onClick={() => edit.themeMap.addPropertyMap('example.example1', { desc: 'b', value: 'b' })}>加模板</Button>
-        <Button onClick={() => edit.themeMap.delete('example.example1')}>删模板</Button>
+        <Button onClick={() => {
+          edit.themeMap.add('subThemeMap','子映射')
+          edit.themeMap.addPropertyMap('subThemeMap.example', { desc: 'b', value: 'b' })
+        }}
+        >
+          加模板
+        </Button>
+        <Button onClick={() => edit.themeMap.delete('subThemeMap')}>删模板</Button>
         <Button onClick={() => edit.themeMap.change('example', 1)}>改模板</Button>
         <Button onClick={() => edit.themeMap.changeDesc('example', '描述')}>改模板描述</Button>
         <Button onClick={() => edit.themeMap.undo()}>撤销映射更改</Button>
