@@ -45,7 +45,7 @@ export function checkThemeItemName(name: string): void | never {
 
 /** 创建当前变更的浅复制 */
 function copyThemeEditRecorder<T>(themeEditRecorder: ThemeEditRecorder<T>): ThemeEditRecorder<T> {
-  const newThemeEditRecorder: ThemeEditRecorder<T> = themeEditRecorder ? new Map(themeEditRecorder.entries()) : new Map()
+  const newThemeEditRecorder: ThemeEditRecorder<T> = new Map(themeEditRecorder.entries())
   return newThemeEditRecorder
 }
 

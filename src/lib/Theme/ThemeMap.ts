@@ -82,7 +82,7 @@ export function themeMapHas(themeMap: ThemeMap, themeMapEditRecorderKey: string)
 
 /** 创建当前变更的浅复制 */
 function copyThemeMapEditRecorder(themeMapEditRecorder: ThemeMapEditRecorder): ThemeMapEditRecorder {
-  const newThemeMapEditRecorder: ThemeMapEditRecorder = themeMapEditRecorder ? new Map(themeMapEditRecorder.entries()) : new Map()
+  const newThemeMapEditRecorder: ThemeMapEditRecorder = new Map(themeMapEditRecorder.entries())
   return newThemeMapEditRecorder
 }
 
