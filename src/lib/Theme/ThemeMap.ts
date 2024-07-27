@@ -86,8 +86,15 @@ function copyThemeMapEditRecorder(themeMapEditRecorder: ThemeMapEditRecorder): T
   return newThemeMapEditRecorder
 }
 
-/** 创建或替换key指示的子映射.创建一个新变更反映此次变更.  */
-export function addThemeMap(themeMapEditRecorder: ThemeMapEditRecorder, themeMapEditRecorderKey: string, value: SubThemeMap | PropertyMap) {
+/** 创建或替换key指示的具有下级结构的子映射.创建一个新变更反映此次变更.  */
+export function addThemeMap(themeMapEditRecorder: ThemeMapEditRecorder, themeMapEditRecorderKey: string, desc: string) {
+  const newThemeMapEditRecorder = copyThemeMapEditRecorder(themeMapEditRecorder)
+  newThemeMapEditRecorder.set(themeMapEditRecorderKey, { type: 'add', value: { desc, children: new Map() as ThemeMap } })
+  return newThemeMapEditRecorder
+}
+
+/** 创建或替换key指示的属性映射.创建一个新变更反映此次变更.  */
+export function addThemeMapPropertyMap(themeMapEditRecorder: ThemeMapEditRecorder, themeMapEditRecorderKey: string, value: PropertyMap) {
   const newThemeMapEditRecorder = copyThemeMapEditRecorder(themeMapEditRecorder)
   newThemeMapEditRecorder.set(themeMapEditRecorderKey, { type: 'add', value })
   return newThemeMapEditRecorder

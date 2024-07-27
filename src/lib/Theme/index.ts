@@ -1,6 +1,6 @@
 import { createContext, createElement, FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
 import { type ThemeItem, type Theme, type ThemeEditRecorder, addThemeItem, deleteThemeItem, changeThemeItem, getInfoFromExtendThemeItemName, ThemeItemValue, checkThemeItemName, changeThemeItemDesc, undoThemeChange } from './Theme'
-import { addThemeMap, changeThemeMap, changeThemeMapDesc, deleteThemeMap, isPropertyMap, PropertyMapValue, SubThemeMap, ThemeMapItemBaseType, undoThemeMapChange, type PropertyMap, type ThemeMap, type ThemeMapEditRecorder } from './ThemeMap'
+import { addThemeMap, addThemeMapPropertyMap, changeThemeMap, changeThemeMapDesc, deleteThemeMap, isPropertyMap, PropertyMapValue, SubThemeMap, ThemeMapItemBaseType, undoThemeMapChange, type PropertyMap, type ThemeMap, type ThemeMapEditRecorder } from './ThemeMap'
 import { generate } from '@ant-design/colors';
 import TinyColor2 from 'tinycolor2'
 
@@ -109,10 +109,16 @@ export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
       }
 
       const themeMap = {
-        /** 创建或替换key指示的子映射 */
-        add: (themeMapEditRecorderKey: string, value: SubThemeMap | PropertyMap) => {
+        /** 创建或替换key指示的具有下级结构的子映射 */
+        add: (themeMapEditRecorderKey: string, desc: string) => {
           setThemeMapEditRecorder(themeInfo => {
-            return addThemeMap(themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, value)
+            return addThemeMap(themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, desc)
+          })
+        },
+        /** 创建或替换key指示的属性映射 */
+        addPropertyMap: (themeMapEditRecorderKey: string, value: PropertyMap) => {
+          setThemeMapEditRecorder(themeInfo => {
+            return addThemeMapPropertyMap(themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, value)
           })
         },
         /** 删除key指示的子映射 */

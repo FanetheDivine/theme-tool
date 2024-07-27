@@ -304,7 +304,7 @@ import { ThemeProvider } from "@/utils/theme";
     setThemeInfo(initValue)
     //增删改撤
     edit.theme.// add,delete,change,changeDesc,undo 增删改撤
-    edit.themeMap.// add,delete,change,changeDesc,undo
+    edit.themeMap.// add,addPropertyMap,delete,change,changeDesc,undo 增加子映射或者属性映射
     // 取得应用变更的主题、映射和主题变量
     const editedTheme = getEditedTheme(themeInfo.theme,themeInfo.themeEditRecorder)
     const editedThemeMap = getEditedThemeMap(themeInfo.themeMap,themeInfo.themeMapEditRecorder)

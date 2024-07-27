@@ -22,11 +22,14 @@ const Page: FC = () => {
     const editedThemeMap = getEditedThemeMap(themeInfo.themeMap, themeInfo.themeMapEditRecorder)
     const themeVars = getThemeVars(editedTheme, editedThemeMap)
     // console.log(JSON.stringify(Array.from(themeInfo.themeMap.entries())))
-    // console.log(JSON.stringify(Array.from(themeInfo.themeMapEditRecorder.entries())))
     // console.log(JSON.stringify(Array.from(themeInfo.themeEditRecorder?.entries())))
-    console.log(JSON.stringify(Array.from(editedTheme.entries())))
+    // console.log(JSON.stringify(Array.from(editedTheme.entries())))
+
+    console.log(JSON.stringify(Array.from(themeInfo.themeMap.entries())))
+    console.log(JSON.stringify(Array.from(themeInfo.themeMapEditRecorder.entries())))
     console.log(JSON.stringify(Array.from(editedThemeMap.entries())))
-    console.log(JSON.stringify(Array.from(themeVars.entries())))
+
+    // console.log(JSON.stringify(Array.from(themeVars.entries())))
   }
 
   return (
@@ -42,7 +45,7 @@ const Page: FC = () => {
         <Button onClick={() => edit.theme.undo()}>撤销主题更改</Button>
       </div>
       <div>
-        <Button onClick={() => edit.themeMap.add('example.example1', { desc: 'b', value: 'b' })}>加模板</Button>
+        <Button onClick={() => edit.themeMap.addPropertyMap('example.example1', { desc: 'b', value: 'b' })}>加模板</Button>
         <Button onClick={() => edit.themeMap.delete('example.example1')}>删模板</Button>
         <Button onClick={() => edit.themeMap.change('example', 1)}>改模板</Button>
         <Button onClick={() => edit.themeMap.changeDesc('example', '描述')}>改模板描述</Button>
