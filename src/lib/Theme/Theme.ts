@@ -44,13 +44,13 @@ export function checkThemeItemName(name: string): void | never {
 }
 
 /** 创建当前变更的浅复制 */
-function copyThemeEditRecorder<T>(themeEditRecorder: ThemeEditRecorder<T> | undefined): ThemeEditRecorder<T> {
+function copyThemeEditRecorder<T>(themeEditRecorder: ThemeEditRecorder<T>): ThemeEditRecorder<T> {
   const newThemeEditRecorder: ThemeEditRecorder<T> = themeEditRecorder ? new Map(themeEditRecorder.entries()) : new Map()
   return newThemeEditRecorder
 }
 
 /** 创建或替换与`name`同名的主题元.创建一个新变更反映此次变更. */
-export function addThemeItem<T>(themeEditRecorder: ThemeEditRecorder<T> | undefined, name: string, value: ThemeItem<T>) {
+export function addThemeItem<T>(themeEditRecorder: ThemeEditRecorder<T>, name: string, value: ThemeItem<T>) {
   checkThemeItemName(name)
   const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
   newThemeEditRecorder.set(name, { type: 'add', value })
@@ -58,7 +58,7 @@ export function addThemeItem<T>(themeEditRecorder: ThemeEditRecorder<T> | undefi
 }
 
 /** 删除与`name`同名的主题元.创建一个新变更反映此次变更. */
-export function deleteThemeItem<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T> | undefined, name: string) {
+export function deleteThemeItem<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T>, name: string) {
   const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
   if (theme.has(name)) {
     newThemeEditRecorder.set(name, { type: 'delete' })
@@ -69,7 +69,7 @@ export function deleteThemeItem<T>(theme: Theme<T>, themeEditRecorder: ThemeEdit
 }
 
 /** 修改与`name`同名的主题元.创建一个新变更反映此次变更. */
-export function changeThemeItem<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T> | undefined, name: string, value: ThemeItemValue<T>) {
+export function changeThemeItem<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T>, name: string, value: ThemeItemValue<T>) {
   const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
   const record = newThemeEditRecorder.get(name)
   if (record) {
@@ -101,7 +101,7 @@ export function changeThemeItem<T>(theme: Theme<T>, themeEditRecorder: ThemeEdit
 }
 
 /** 修改与`name`同名的主题元的描述.创建一个新变更反映此次变更. */
-export function changeThemeItemDesc<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T> | undefined, name: string, desc: string) {
+export function changeThemeItemDesc<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T>, name: string, desc: string) {
   const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
   const record = newThemeEditRecorder.get(name)
   if (record) {
@@ -132,11 +132,18 @@ export function changeThemeItemDesc<T>(theme: Theme<T>, themeEditRecorder: Theme
   return newThemeEditRecorder
 }
 
-/** 取得应用变更后的主题 */
-export function getEditedTheme<T>(theme: Theme<T>, themeEditRecorder?: ThemeEditRecorder<T>): Theme<T> {
-  if (!themeEditRecorder) {
-    return theme
+/** 撤销key指示的子映射的变更.创建一个新变更反映此次变更. */
+export function undoThemeChange<T>(themeEditRecorder: ThemeEditRecorder<T>, name?: string) {
+  if (name === undefined) {
+    return new Map() as ThemeEditRecorder<T>
   }
+  const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
+  newThemeEditRecorder.delete(name)
+  return newThemeEditRecorder
+}
+
+/** 取得应用变更后的主题 */
+export function getEditedTheme<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T>): Theme<T> {
   const editedTheme: Theme<T> = new Map(theme.entries())
   themeEditRecorder.entries().forEach(([name, record]) => {
     switch (record.type) {

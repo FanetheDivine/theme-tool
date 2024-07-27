@@ -1,6 +1,6 @@
 import { createContext, createElement, FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
-import { type ThemeItem, type Theme, type ThemeEditRecorder, addThemeItem, deleteThemeItem, changeThemeItem, getInfoFromExtendThemeItemName, ThemeItemValue, checkThemeItemName, changeThemeItemDesc } from './Theme'
-import { addThemeMap, changeThemeMap, changeThemeMapDesc, deleteThemeMap, isPropertyMap, PropertyMapValue, SubThemeMap, ThemeMapItemBaseType, type PropertyMap, type ThemeMap, type ThemeMapEditRecorder } from './ThemeMap'
+import { type ThemeItem, type Theme, type ThemeEditRecorder, addThemeItem, deleteThemeItem, changeThemeItem, getInfoFromExtendThemeItemName, ThemeItemValue, checkThemeItemName, changeThemeItemDesc, undoThemeChange } from './Theme'
+import { addThemeMap, changeThemeMap, changeThemeMapDesc, deleteThemeMap, isPropertyMap, PropertyMapValue, SubThemeMap, ThemeMapItemBaseType, undoThemeMapChange, type PropertyMap, type ThemeMap, type ThemeMapEditRecorder } from './ThemeMap'
 import { generate } from '@ant-design/colors';
 import TinyColor2 from 'tinycolor2'
 
@@ -13,17 +13,36 @@ export { getEditedThemeMap, isPropertyMap, isPropertyMapEdit } from './ThemeMap'
 export type ThemeInfo<T> = {
   theme: Theme<T>,
   themeMap: ThemeMap,
-  themeEditRecorder?: ThemeEditRecorder<T>,
-  themeMapEditRecorder?: ThemeMapEditRecorder
+  themeEditRecorder: ThemeEditRecorder<T>,
+  themeMapEditRecorder: ThemeMapEditRecorder
 }
 
+/** 将类型中的某些属性变为可选 */
+type Option<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+/** 用于初始化的主题 */
+type InitThemeInfo<T> = Option<ThemeInfo<T>, 'themeEditRecorder' | 'themeMapEditRecorder'>
+
+/** 从initTheme得到主题state的值 */
+function getInitValue<T>(initThemeInfo?: InitThemeInfo<T>): ThemeInfo<T> | undefined {
+  const initValue = initThemeInfo
+    ? {
+      theme: initThemeInfo.theme,
+      themeMap: initThemeInfo.themeMap,
+      themeEditRecorder: initThemeInfo.themeEditRecorder ?? new Map() as ThemeEditRecorder<T>,
+      themeMapEditRecorder: initThemeInfo.themeMapEditRecorder ?? new Map() as ThemeMapEditRecorder
+    }
+    : undefined
+  return initValue
+}
+
+
 /** 获取主题上下文和钩子 */
-export function createTheme<T = never>(initTheme?: ThemeInfo<T>) {
+export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
 
   const ThemeContext = createContext<ReturnType<typeof useState<ThemeInfo<T>>> | null>(null)
 
   const ThemeProvider: FC<PropsWithChildren> = props => {
-    const [themeInfo, setThemeInfo] = useState<ThemeInfo<T> | undefined>(initTheme)
+    const [themeInfo, setThemeInfo] = useState<ThemeInfo<T> | undefined>(() => getInitValue(initThemeInfo))
     return createElement(ThemeContext.Provider, { value: [themeInfo, setThemeInfo] }, props.children)
   }
 
@@ -32,11 +51,11 @@ export function createTheme<T = never>(initTheme?: ThemeInfo<T>) {
     if (!contextValue) {
       throw new Error('不处于主题上下文内')
     }
-    const [themeInfo, setThemeInfo] = contextValue
+    const [themeInfo, originSetThemeInfo] = contextValue
 
     const edit = useMemo(() => {
       const safeSetThemeInfo = (fn: (themeInfo: ThemeInfo<T>) => ThemeInfo<T>) => {
-        setThemeInfo(themeInfo => {
+        originSetThemeInfo(themeInfo => {
           if (!themeInfo) {
             throw new Error('没有应用主题')
           }
@@ -77,6 +96,14 @@ export function createTheme<T = never>(initTheme?: ThemeInfo<T>) {
           setThemeEditRecorder(themeInfo => {
             return changeThemeItemDesc(themeInfo.theme, themeInfo.themeEditRecorder, name, desc)
           })
+        },
+        /** 撤销主题变更
+         * @param name 寻找对同名主题元的变更.不传会清空所有变更.
+        */
+        undo: (name?: string) => {
+          setThemeEditRecorder(themeInfo => {
+            return undoThemeChange(themeInfo.themeEditRecorder, name)
+          })
         }
       }
 
@@ -104,6 +131,14 @@ export function createTheme<T = never>(initTheme?: ThemeInfo<T>) {
           setThemeMapEditRecorder(themeInfo => {
             return changeThemeMapDesc(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, desc)
           })
+        },
+        /** 撤销映射变更
+         * @param themeMapEditRecorderKey 通过映射索引寻找变更.不传会清空所有变更.
+         */
+        undo: (themeMapEditRecorderKey?: string) => {
+          setThemeMapEditRecorder(themeInfo => {
+            return undoThemeMapChange(themeInfo.themeMapEditRecorder, themeMapEditRecorderKey)
+          })
         }
       }
 
@@ -113,12 +148,12 @@ export function createTheme<T = never>(initTheme?: ThemeInfo<T>) {
         /** 映射变更函数 */
         themeMap
       }
-    }, [setThemeInfo])
+    }, [originSetThemeInfo])
 
-    const checkedSetThemeInfo = useCallback((themeInfo: ThemeInfo<T>) => {
-      themeInfo.theme.keys().forEach(checkThemeItemName)
-      setThemeInfo(themeInfo)
-    }, [setThemeInfo])
+    const checkedSetThemeInfo = useCallback((initThemeInfo: InitThemeInfo<T>) => {
+      initThemeInfo.theme.keys().forEach(checkThemeItemName)
+      originSetThemeInfo(getInitValue(themeInfo))
+    }, [originSetThemeInfo])
 
     return {
       /** 主题信息 */
