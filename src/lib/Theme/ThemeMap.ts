@@ -107,33 +107,41 @@ export function deleteThemeMap(themeMap: ThemeMap, themeMapEditRecorder: ThemeMa
 /** 修改key指示的子映射.创建一个新变更反映此次变更. */
 export function changeThemeMap(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder | undefined, themeMapEditRecorderKey: string, value: ThemeMap | PropertyMapValue) {
   const newThemeMapEditRecorder = copyThemeEditRecorder(themeMapEditRecorder)
-  if (newThemeMapEditRecorder.has(themeMapEditRecorderKey)) {
-    const record = newThemeMapEditRecorder.get(themeMapEditRecorderKey)!
-    if (record.type === 'delete' || record.type === 'change') {
-      newThemeMapEditRecorder.set(themeMapEditRecorderKey, { type: 'change', value })
-    } else if (record.type === 'add') {
-      if (isPropertyMap(record.value) && isPropertyMapEdit(value)) {
-        newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
-          type: 'add',
-          value: { desc: record.value.desc, value }
-        })
-      } else if (!isPropertyMap(record.value) && !isPropertyMapEdit(value)) {
-        newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
-          type: 'add',
-          value: { desc: record.value.desc, children: value }
-        })
+  const record = newThemeMapEditRecorder.get(themeMapEditRecorderKey)
+  if (record) {
+    switch (record.type) {
+      case 'delete':
+      case 'change': {
+        newThemeMapEditRecorder.set(themeMapEditRecorderKey, { type: 'change', value })
+        break
       }
-    } else if (record.type === 'descChange') {
-      if (isPropertyMapEdit(value)) {
-        newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
-          type: 'add',
-          value: { desc: record.desc, value }
-        })
-      } else {
-        newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
-          type: 'add',
-          value: { desc: record.desc, children: value }
-        })
+      case 'add': {
+        if (isPropertyMap(record.value) && isPropertyMapEdit(value)) {
+          newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
+            type: 'add',
+            value: { desc: record.value.desc, value }
+          })
+        } else if (!isPropertyMap(record.value) && !isPropertyMapEdit(value)) {
+          newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
+            type: 'add',
+            value: { desc: record.value.desc, children: value }
+          })
+        }
+        break
+      }
+      case 'descChange': {
+        if (isPropertyMapEdit(value)) {
+          newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
+            type: 'add',
+            value: { desc: record.desc, value }
+          })
+        } else {
+          newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
+            type: 'add',
+            value: { desc: record.desc, children: value }
+          })
+        }
+        break
       }
     }
   } else if (themeMapHas(themeMap, themeMapEditRecorderKey)) {
@@ -145,26 +153,34 @@ export function changeThemeMap(themeMap: ThemeMap, themeMapEditRecorder: ThemeMa
 /** 修改key指示的子映射的描述.创建一个新变更反映此次变更. */
 export function changeThemeMapDesc(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder | undefined, themeMapEditRecorderKey: string, desc: string) {
   const newThemeMapEditRecorder = copyThemeEditRecorder(themeMapEditRecorder)
-  if (newThemeMapEditRecorder.has(themeMapEditRecorderKey)) {
-    const record = newThemeMapEditRecorder.get(themeMapEditRecorderKey)!
-    if (record.type === 'delete' || record.type === 'descChange') {
-      newThemeMapEditRecorder.set(themeMapEditRecorderKey, { type: 'descChange', desc })
-    } else if (record.type === 'add') {
-      newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
-        type: 'add',
-        value: { ...record.value, desc }
-      })
-    } else if (record.type === 'change') {
-      if (isPropertyMapEdit(record.value)) {
+  const record = newThemeMapEditRecorder.get(themeMapEditRecorderKey)
+  if (record) {
+    switch (record.type) {
+      case 'delete':
+      case 'descChange': {
+        newThemeMapEditRecorder.set(themeMapEditRecorderKey, { type: 'descChange', desc })
+        break
+      }
+      case 'add': {
         newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
           type: 'add',
-          value: { value: record.value, desc }
+          value: { ...record.value, desc }
         })
-      } else {
-        newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
-          type: 'add',
-          value: { children: record.value, desc }
-        })
+        break
+      }
+      case 'change': {
+        if (isPropertyMapEdit(record.value)) {
+          newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
+            type: 'add',
+            value: { value: record.value, desc }
+          })
+        } else {
+          newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
+            type: 'add',
+            value: { children: record.value, desc }
+          })
+        }
+        break
       }
     }
   } else if (themeMapHas(themeMap, themeMapEditRecorderKey)) {
@@ -198,23 +214,32 @@ export function getEditedThemeMap(themeMap: ThemeMap, themeMapEditRecorder?: The
     for (let i = 0; i < keys.length; ++i) {
       const key = keys[i]
       if (i === keys.length - 1) {
-        if (record.type === 'delete') {
-          currentThemeMap.delete(key)
-        } else if (record.type === 'add') {
-          currentThemeMap.set(key, record.value)
-        } else if (record.type === 'change') {
-          if (currentThemeMap.has(key)) {
-            const curValue = currentThemeMap.get(key)!
-            if (isPropertyMapEdit(record.value)) {
-              currentThemeMap.set(key, { desc: curValue.desc, value: record.value })
-            } else {
-              currentThemeMap.set(key, { desc: curValue.desc, children: record.value })
-            }
+        switch (record.type) {
+          case 'delete': {
+            currentThemeMap.delete(key)
+            break
           }
-        } else if(record.type==='descChange') {
-          if (currentThemeMap.has(key)) {
-            const curValue = currentThemeMap.get(key)!
-            currentThemeMap.set(key, { ...curValue, desc: record.desc })
+          case 'add': {
+            currentThemeMap.set(key, record.value)
+            break
+          }
+          case 'change': {
+            const curValue = currentThemeMap.get(key)
+            if (curValue) {
+              if (isPropertyMapEdit(record.value)) {
+                currentThemeMap.set(key, { desc: curValue.desc, value: record.value })
+              } else {
+                currentThemeMap.set(key, { desc: curValue.desc, children: record.value })
+              }
+            }
+            break
+          }
+          case 'descChange': {
+            const curValue = currentThemeMap.get(key)
+            if (curValue) {
+              currentThemeMap.set(key, { ...curValue, desc: record.desc })
+            }
+            break
           }
         }
       } else if (currentThemeMap.has(key)) {

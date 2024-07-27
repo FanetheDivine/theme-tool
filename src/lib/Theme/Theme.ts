@@ -71,20 +71,28 @@ export function deleteThemeItem<T>(theme: Theme<T>, themeEditRecorder: ThemeEdit
 /** 修改与`name`同名的主题元.创建一个新变更反映此次变更. */
 export function changeThemeItem<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T> | undefined, name: string, value: ThemeItemValue<T>) {
   const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
-  if (newThemeEditRecorder.has(name)) {
-    const record = newThemeEditRecorder.get(name)!
-    if (record.type === 'delete' || record.type === 'change') {
-      newThemeEditRecorder.set(name, { type: 'change', value })
-    } else if (record.type === 'add') {
-      newThemeEditRecorder.set(name, {
-        type: 'add',
-        value: { desc: record.value.desc, value }
-      })
-    } else if (record.type === 'descChange') {
-      newThemeEditRecorder.set(name, {
-        type: 'add',
-        value: { desc: record.desc, value }
-      })
+  const record = newThemeEditRecorder.get(name)
+  if (record) {
+    switch (record.type) {
+      case 'delete':
+      case 'change': {
+        newThemeEditRecorder.set(name, { type: 'change', value })
+        break
+      }
+      case 'add': {
+        newThemeEditRecorder.set(name, {
+          type: 'add',
+          value: { desc: record.value.desc, value }
+        })
+        break
+      }
+      case 'descChange': {
+        newThemeEditRecorder.set(name, {
+          type: 'add',
+          value: { desc: record.desc, value }
+        })
+        break
+      }
     }
   } else if (theme.has(name)) {
     newThemeEditRecorder.set(name, { type: 'change', value })
@@ -95,20 +103,28 @@ export function changeThemeItem<T>(theme: Theme<T>, themeEditRecorder: ThemeEdit
 /** 修改与`name`同名的主题元的描述.创建一个新变更反映此次变更. */
 export function changeThemeItemDesc<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T> | undefined, name: string, desc: string) {
   const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
-  if (newThemeEditRecorder.has(name)) {
-    const record = newThemeEditRecorder.get(name)!
-    if (record.type === 'delete' || record.type === 'descChange') {
-      newThemeEditRecorder.set(name, { type: 'descChange', desc })
-    } else if (record.type === 'add') {
-      newThemeEditRecorder.set(name, {
-        type: 'add',
-        value: { value: record.value.value, desc }
-      })
-    } else if (record.type === 'change') {
-      newThemeEditRecorder.set(name, {
-        type: 'add',
-        value: { value: record.value, desc: desc }
-      })
+  const record = newThemeEditRecorder.get(name)
+  if (record) {
+    switch (record.type) {
+      case 'delete':
+      case 'descChange': {
+        newThemeEditRecorder.set(name, { type: 'descChange', desc })
+        break
+      }
+      case 'add': {
+        newThemeEditRecorder.set(name, {
+          type: 'add',
+          value: { value: record.value.value, desc }
+        })
+        break
+      }
+      case 'change': {
+        newThemeEditRecorder.set(name, {
+          type: 'add',
+          value: { value: record.value, desc: desc }
+        })
+        break
+      }
     }
   } else if (theme.has(name)) {
     newThemeEditRecorder.set(name, { type: 'descChange', desc })
@@ -123,13 +139,28 @@ export function getEditedTheme<T>(theme: Theme<T>, themeEditRecorder?: ThemeEdit
   }
   const editedTheme: Theme<T> = new Map(theme.entries())
   themeEditRecorder.entries().forEach(([name, record]) => {
-    if (record.type === 'delete') {
-      editedTheme.delete(name)
-    } else if (record.type === 'add') {
-      editedTheme.set(name, record.value)
-    } else if (record.type === 'change') {
-      if (editedTheme.has(name)) {
-        editedTheme.get(name)!.value = record.value
+    switch (record.type) {
+      case 'delete': {
+        editedTheme.delete(name)
+        break
+      }
+      case 'add': {
+        editedTheme.set(name, record.value)
+        break
+      }
+      case 'change': {
+        const curValue = editedTheme.get(name)
+        if (curValue) {
+          editedTheme.set(name, { desc: curValue.desc, value: record.value })
+        }
+        break
+      }
+      case 'descChange': {
+        const curValue = editedTheme.get(name)
+        if (curValue) {
+          editedTheme.set(name, { value: curValue.value, desc: record.desc })
+        }
+        break
       }
     }
   })
