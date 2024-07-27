@@ -7,7 +7,7 @@ import TinyColor2 from 'tinycolor2'
 export type { ThemeItemBaseValue, ThemeItemValue, ThemeItem, Theme, ThemeEdit, ThemeEditRecorder } from './Theme'
 export type { PropertyMapBaseValue, PropertyMapValue, ThemeMapItemBaseType, PropertyMap, SubThemeMap, ThemeMap, ThemeMapEdit, ThemeMapEditRecorder } from './ThemeMap'
 export { getEditedTheme, checkThemeItemName, getInfoFromExtendThemeItemName } from './Theme'
-export { getEditedThemeMap, isPropertyMap, isPropertyMapEdit } from './ThemeMap'
+export { getEditedThemeMap, isPropertyMap } from './ThemeMap'
 
 /** 主题信息 */
 export type ThemeInfo<T> = {
@@ -127,8 +127,8 @@ export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
             return deleteThemeMap(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapEditRecorderKey)
           })
         },
-        /** 修改key指示的子映射 */
-        change: (themeMapEditRecorderKey: string, value: ThemeMap | PropertyMapValue) => {
+        /** 修改key指示的属性映射 */
+        change: (themeMapEditRecorderKey: string, value: PropertyMapValue) => {
           setThemeMapEditRecorder(themeInfo => {
             return changeThemeMap(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, value)
           })

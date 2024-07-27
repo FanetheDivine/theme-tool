@@ -157,7 +157,7 @@ Map
 /** 变更类型 */
 type ThemeMapEdit = { type: 'add', value: SubThemeMap | PropertyMap }
   | { type: 'delete' }
-  | { type: 'change', value: ThemeMap | PropertyMapValue }
+  | { type: 'change', value: PropertyMapValue }
   | { type: 'descChange', desc: string }
 
 /** 映射变更 */
@@ -168,7 +168,7 @@ type ThemeMapEditRecorder = Map<string, ThemeMapEdit>
 * 对变更的解释
   假设存在变更`key => { type, value(或desc) }`
   - 若type为'delete',key的目标被视作删除
-  - 若type为'change'且key的目标在映射中,这个属性映射的的值(children或value)被value替换
+  - 若type为'change'且key的目标是属性映射,这个属性映射的的值被value替换
   - 若type为'descChange'且key的目标在映射中,这个属性映射的的desc被desc替换
   - 若type为'add'且key的目标在映射中,视为key的目标被value完全替换
   - 若type为'add'且key的目标仅最后一部分索引不在映射中,视为以value创建新映射.(例如'example.Title1'会创建新映射,而'example1.Title1'则不会)
@@ -326,9 +326,6 @@ import { ThemeProvider } from "@/utils/theme";
 * `isPropertyMap`
   `(value: PropertyMap | SubThemeMap)=> value is PropertyMap`
   `判断是否是属性映射`
-* `isPropertyMapEdit`
-  `(value: ThemeMap | PropertyMapValue)=> value is PropertyMapValue`
-  判断一个变更是否是属性映射变更
 * `getEditedThemeMap`  
   `(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder): ThemeMap`  
   取得应用变更后的映射
