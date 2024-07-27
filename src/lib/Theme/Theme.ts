@@ -24,7 +24,10 @@ export type Theme<T> = Map<string, ThemeItem<T>>
 /********************  主题变更系列类型    ********************/
 
 /** 变更类型 */
-export type ThemeEdit<T> = { type: 'add', value: ThemeItem<T> } | { type: 'delete' } | { type: 'change', value: ThemeItemValue<T> }
+export type ThemeEdit<T> = { type: 'add', value: ThemeItem<T> }
+  | { type: 'delete' }
+  | { type: 'change', value: ThemeItemValue<T> }
+  | { type: 'descChange', desc: string }
 
 /** 主题变更 */
 export type ThemeEditRecorder<T> = Map<string, ThemeEdit<T>>
@@ -69,17 +72,46 @@ export function deleteThemeItem<T>(theme: Theme<T>, themeEditRecorder: ThemeEdit
 export function changeThemeItem<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T> | undefined, name: string, value: ThemeItemValue<T>) {
   const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
   if (newThemeEditRecorder.has(name)) {
-    const record = newThemeEditRecorder.set(name, { type: 'change', value }).get(name)!
+    const record = newThemeEditRecorder.get(name)!
     if (record.type === 'delete' || record.type === 'change') {
       newThemeEditRecorder.set(name, { type: 'change', value })
     } else if (record.type === 'add') {
       newThemeEditRecorder.set(name, {
-        ...record,
-        value: { ...record.value, value }
+        type: 'add',
+        value: { desc: record.value.desc, value }
+      })
+    } else if (record.type === 'descChange') {
+      newThemeEditRecorder.set(name, {
+        type: 'add',
+        value: { desc: record.desc, value }
       })
     }
   } else if (theme.has(name)) {
     newThemeEditRecorder.set(name, { type: 'change', value })
+  }
+  return newThemeEditRecorder
+}
+
+/** 修改与`name`同名的主题元的描述.创建一个新变更反映此次变更. */
+export function changeThemeItemDesc<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T> | undefined, name: string, desc: string) {
+  const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
+  if (newThemeEditRecorder.has(name)) {
+    const record = newThemeEditRecorder.get(name)!
+    if (record.type === 'delete' || record.type === 'descChange') {
+      newThemeEditRecorder.set(name, { type: 'descChange', desc })
+    } else if (record.type === 'add') {
+      newThemeEditRecorder.set(name, {
+        type: 'add',
+        value: { value: record.value.value, desc }
+      })
+    } else if (record.type === 'change') {
+      newThemeEditRecorder.set(name, {
+        type: 'add',
+        value: { value: record.value, desc: desc }
+      })
+    }
+  } else if (theme.has(name)) {
+    newThemeEditRecorder.set(name, { type: 'descChange', desc })
   }
   return newThemeEditRecorder
 }

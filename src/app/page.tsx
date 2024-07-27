@@ -30,9 +30,11 @@ const Page: FC = () => {
       <Button onClick={()=>edit.theme.add('@b',{desc:'b',value:'b'})}>加主题元</Button>
       <Button onClick={()=>edit.theme.delete('@b')}>删主题元</Button>
       <Button onClick={()=>edit.theme.change('@a',[])}>改主题元</Button>
+      <Button onClick={()=>edit.theme.changeDesc('@a','描述')}>改主题元描述</Button>
       <Button onClick={()=>edit.themeMap.add('example.example1',{desc:'b',value:'b'})}>模板</Button>
       <Button onClick={()=>edit.themeMap.delete('example.example1')}>删模板</Button>
       <Button onClick={()=>edit.themeMap.change('example',1)}>改模板</Button>
+      <Button onClick={()=>edit.theme.changeDesc('example','描述')}>改模板描述</Button>
     </>
   )
 }

@@ -1,6 +1,6 @@
 import { createContext, createElement, FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
-import { type ThemeItem, type Theme, type ThemeEditRecorder, addThemeItem, deleteThemeItem, changeThemeItem, getInfoFromExtendThemeItemName, ThemeItemValue, checkThemeItemName } from './Theme'
-import { addThemeMap, changeThemeMap, deleteThemeMap, isPropertyMap, PropertyMapValue, SubThemeMap, ThemeMapItemBaseType, type PropertyMap, type ThemeMap, type ThemeMapEditRecorder } from './ThemeMap'
+import { type ThemeItem, type Theme, type ThemeEditRecorder, addThemeItem, deleteThemeItem, changeThemeItem, getInfoFromExtendThemeItemName, ThemeItemValue, checkThemeItemName, changeThemeItemDesc } from './Theme'
+import { addThemeMap, changeThemeMap, changeThemeMapDesc, deleteThemeMap, isPropertyMap, PropertyMapValue, SubThemeMap, ThemeMapItemBaseType, type PropertyMap, type ThemeMap, type ThemeMapEditRecorder } from './ThemeMap'
 import { generate } from '@ant-design/colors';
 import TinyColor2 from 'tinycolor2'
 
@@ -71,6 +71,12 @@ export function createTheme<T = never>(initTheme?: ThemeInfo<T>) {
           setThemeEditRecorder(themeInfo => {
             return changeThemeItem(themeInfo.theme, themeInfo.themeEditRecorder, name, value)
           })
+        },
+        /** 修改与`name`同名的主题元的描述 */
+        changeDesc: (name: string, desc: string) => {
+          setThemeEditRecorder(themeInfo => {
+            return changeThemeItemDesc(themeInfo.theme, themeInfo.themeEditRecorder, name, desc)
+          })
         }
       }
 
@@ -91,6 +97,12 @@ export function createTheme<T = never>(initTheme?: ThemeInfo<T>) {
         change: (themeMapEditRecorderKey: string, value: ThemeMap | PropertyMapValue) => {
           setThemeMapEditRecorder(themeInfo => {
             return changeThemeMap(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, value)
+          })
+        },
+        /** 修改key指示的子映射的简介 */
+        changeDesc: (themeMapEditRecorderKey: string, desc: string) => {
+          setThemeMapEditRecorder(themeInfo => {
+            return changeThemeMapDesc(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, desc)
           })
         }
       }

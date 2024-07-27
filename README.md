@@ -49,7 +49,10 @@ Map
 主题变更是主题元名称与变更结果的映射
 ```ts
 /** 变更类型 */
-type ThemeEdit<T> = { type: 'add', value: ThemeItem<T> } | { type: 'delete' } | { type: 'change', value: ThemeItemValue<T> }
+type ThemeEdit<T> = { type: 'add', value: ThemeItem<T> }
+  | { type: 'delete' }
+  | { type: 'change', value: ThemeItemValue<T> }
+  | { type: 'descChange', desc: string }
 
 /** 主题变更 */
 type ThemeEditRecorder<T> = Map<string, ThemeEdit<T>>
@@ -57,9 +60,10 @@ type ThemeEditRecorder<T> = Map<string, ThemeEdit<T>>
 ##### 主题变更的约定
 * 映射的key是合法主题元名称,但不必包含在主题中.
 * 对变更的解释  
-  假设存在变更`key => { type, value }`
+  假设存在变更`key => { type, value(或desc) }`
   - 若type为'delete',则主题中同名主题元被视为删除;
   - 若type为'change'且key在主题中,则value被视为该主题元的新值;
+  - 若type为'descChange'且key在主题中,则desc被视为该主题元的描述;
   - 若type为'add'且key在主题中,视为同名主题元被value完全替换;
   - 若type为'add'且key不在主题中,则视作主题中增加映射`key => value`.
 ##### 主题变更示例
@@ -151,7 +155,10 @@ Map
 映射变更是映射索引与变更结果的映射.
 ```ts
 /** 变更类型 */
-type ThemeMapEdit = { type: 'add', value: SubThemeMap | PropertyMap } | { type: 'delete' } | { type: 'change', value: ThemeMap | PropertyMapValue }
+type ThemeMapEdit = { type: 'add', value: SubThemeMap | PropertyMap }
+  | { type: 'delete' }
+  | { type: 'change', value: ThemeMap | PropertyMapValue }
+  | { type: 'descChange', desc: string }
 
 /** 映射变更 */
 type ThemeMapEditRecorder = Map<string, ThemeMapEdit>
@@ -159,9 +166,10 @@ type ThemeMapEditRecorder = Map<string, ThemeMapEdit>
 ##### 映射变更的约定
 * 变更总是按照顺序同步地应用于映射.因此可以先添加一个映射再对齐进行修改.
 * 对变更的解释
-  假设存在变更`key => { type, value }`
+  假设存在变更`key => { type, value(或desc) }`
   - 若type为'delete',key的目标被视作删除
   - 若type为'change'且key的目标在映射中,这个属性映射的的值(children或value)被value替换
+  - 若type为'descChange'且key的目标在映射中,这个属性映射的的desc被desc替换
   - 若type为'add'且key的目标在映射中,视为key的目标被value完全替换
   - 若type为'add'且key的目标仅最后一部分索引不在映射中,视为以value创建新映射.(例如'example.Title1'会创建新映射,而'example1.Title1'则不会)
 ##### 映射变更示例
@@ -322,9 +330,11 @@ const Page: FC = () => {
       <Button onClick={()=>edit.theme.add('@b',{desc:'b',value:'b'})}>加主题元</Button>
       <Button onClick={()=>edit.theme.delete('@b')}>删主题元</Button>
       <Button onClick={()=>edit.theme.change('@a',[])}>改主题元</Button>
+      <Button onClick={()=>edit.theme.changeDesc('@a','描述')}>改主题元描述</Button>
       <Button onClick={()=>edit.themeMap.add('example.example1',{desc:'b',value:'b'})}>模板</Button>
       <Button onClick={()=>edit.themeMap.delete('example.example1')}>删模板</Button>
       <Button onClick={()=>edit.themeMap.change('example',1)}>改模板</Button>
+      <Button onClick={()=>edit.theme.changeDesc('example','描述')}>改模板描述</Button>
     </>
   )
 }
