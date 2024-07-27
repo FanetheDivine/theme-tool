@@ -22,24 +22,25 @@ type Option<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 /** 用于初始化的主题 */
 type InitThemeInfo<T> = Option<ThemeInfo<T>, 'themeEditRecorder' | 'themeMapEditRecorder'>
 
-/** 从initTheme得到主题state的值 */
+/** 从initTheme得到主题state的值.这个函数会检查主题元名称. */
 function getInitValue<T>(initThemeInfo?: InitThemeInfo<T>): ThemeInfo<T> | undefined {
-  const initValue = initThemeInfo
-    ? {
-      theme: initThemeInfo.theme,
-      themeMap: initThemeInfo.themeMap,
-      themeEditRecorder: initThemeInfo.themeEditRecorder ?? new Map() as ThemeEditRecorder<T>,
-      themeMapEditRecorder: initThemeInfo.themeMapEditRecorder ?? new Map() as ThemeMapEditRecorder
-    }
-    : undefined
+  if (!initThemeInfo) {
+    return undefined
+  }
+  initThemeInfo.theme.keys().forEach(checkThemeItemName)
+  const initValue = {
+    theme: initThemeInfo.theme,
+    themeMap: initThemeInfo.themeMap,
+    themeEditRecorder: initThemeInfo.themeEditRecorder ?? new Map() as ThemeEditRecorder<T>,
+    themeMapEditRecorder: initThemeInfo.themeMapEditRecorder ?? new Map() as ThemeMapEditRecorder
+  }
   return initValue
 }
-
 
 /** 获取主题上下文和钩子 */
 export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
 
-  const ThemeContext = createContext<ReturnType<typeof useState<ThemeInfo<T>>> | null>(null)
+  const ThemeContext = createContext<ReturnType<typeof useState<ThemeInfo<T> | undefined>> | null>(null)
 
   const ThemeProvider: FC<PropsWithChildren> = props => {
     const [themeInfo, setThemeInfo] = useState<ThemeInfo<T> | undefined>(() => getInitValue(initThemeInfo))
@@ -151,8 +152,7 @@ export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
     }, [originSetThemeInfo])
 
     const checkedSetThemeInfo = useCallback((initThemeInfo: InitThemeInfo<T>) => {
-      initThemeInfo.theme.keys().forEach(checkThemeItemName)
-      originSetThemeInfo(getInitValue(themeInfo))
+      originSetThemeInfo(getInitValue(initThemeInfo))
     }, [originSetThemeInfo])
 
     return {
