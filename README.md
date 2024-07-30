@@ -311,7 +311,7 @@ import { ThemeProvider } from "@/utils/theme";
 * `checkThemeItemName`
   `(name: string)=>void|never`
   是否是合法主题元名称
-* `getEditedTheme`
+* `getEditedThemeVar`
   `(themeVar: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>ThemeVar<T>`
   取得应用变更后的主题变量
 * `getInfoFromExtendThemeItemName`
@@ -329,7 +329,23 @@ import { ThemeProvider } from "@/utils/theme";
 * `getThemeVars`
   `(themeVar: ThemeVar<T>, themeMap: ThemeMap)=>ThemeVars<T>`
   取得主题变量
-## 主题的展示
+## 主题体系的展示和修改
+主题、映射需要按照层级结构分别展示,可以进行变更、体现变更.
+### 基础类型
+展示类型为`ThemeItemBaseValue<T>`的数据.  
+数字使用InputNumber展示,用户自定义的泛型类型应当使用自定义组件.  
+对于字符串类型,`@/utils/BaseStringValue`提供组件进行展示.
+```tsx
+  const initColor = 'rgba(0,255,0,1)'
+  const [value, setValue] = useState(initColor)
+
+  <div className='flex flex-col items-start'>
+    {value}
+    <Button onClick={() => setValue('#' + Math.random().toString(16).slice(2, 8))} type='primary'>重置</Button>
+    <BaseStringValue text={value} value={value} onChange={debounce(setValue, 1000)} className='m-4 w-60'></BaseStringValue>
+  </div>
+```
+此组件可以按照字符串是否是颜色选择不同的展示方式;支持防抖方式调用,表现上是非受控组件,但可以在value突变时受控.
 ### 展示当前主题、映射
 ### 收集变更
 ### 撤回操作
