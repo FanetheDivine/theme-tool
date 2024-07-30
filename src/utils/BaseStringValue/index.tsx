@@ -5,7 +5,7 @@ import { usePrevious } from "ahooks"
 
 type BaseStringValueProps = {
   /** 显示在input中的文字 */
-  text: string,
+  text?: string,
   /** 实际的值 可以被解析为颜色 */
   value: string,
   onChange?: (newValue: string) => void,
@@ -13,7 +13,13 @@ type BaseStringValueProps = {
   className?: string
 }
 
-/** 展示字符串和颜色的组件 在value突变时会重置值 */
+/** 
+ * 用于展示和更改字符串和颜色  
+ * 常规非受控组件 value突变时受控  
+ * 根据初始value或突变value判断是否作为颜色展示  
+ * 可以设置参数text以展示指定文字 不设置则展示value  
+ * @example <BaseStringValue value={value} onChange={debounce(setValue, 1000)} />
+*/
 export const BaseStringValue: FC<BaseStringValueProps> = props => {
   const changedValueRef = useRef<string | tinycolor.Instance>()
   const prevValue = usePrevious(props.value)
@@ -30,7 +36,7 @@ export const BaseStringValue: FC<BaseStringValueProps> = props => {
   return (
     <BaseStringValueInner key={keyRef.current}
       style={props.style} className={props.className}
-      defaultText={props.text} defaultValue={props.value}
+      defaultText={props.text ?? props.value} defaultValue={props.value}
       onChange={v => {
         const color = tinycolor(v)
         changedValueRef.current = color.isValid() ? color : v
