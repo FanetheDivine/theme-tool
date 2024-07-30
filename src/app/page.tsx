@@ -1,12 +1,12 @@
 'use client'
 
-import { getEditedTheme, getEditedThemeMap, getThemeVars } from "@/lib/Theme";
+import { getEditedThemeVar, getEditedThemeMap, getTheme } from "@/lib/Theme";
 import { useTheme } from "@/utils/theme";
 import { Button } from "antd";
 import { FC } from "react";
 
 const initValue = {
-  theme: new Map([
+  themeVar: new Map([
     ['@a', { desc: 'desc', value: [1, ['a']] }]
   ]),
   themeMap: new Map([
@@ -18,18 +18,18 @@ const initValue = {
 const Page: FC = () => {
   const { themeInfo, edit, setThemeInfo } = useTheme()
   if (themeInfo) {
-    const editedTheme = getEditedTheme(themeInfo.theme, themeInfo.themeEditRecorder)
+    const editedThemeVar = getEditedThemeVar(themeInfo.themeVar, themeInfo.themeVarEditRecorder)
     const editedThemeMap = getEditedThemeMap(themeInfo.themeMap, themeInfo.themeMapEditRecorder)
-    const themeVars = getThemeVars(editedTheme, editedThemeMap)
+    const theme = getTheme(editedThemeVar, editedThemeMap)
+    // console.log(JSON.stringify(Array.from(themeInfo.themeVar.entries())))
+    // console.log(JSON.stringify(Array.from(themeInfo.themeVarEditRecorder?.entries())))
+    // console.log(JSON.stringify(Array.from(editedThemeVar.entries())))
+
     // console.log(JSON.stringify(Array.from(themeInfo.themeMap.entries())))
-    // console.log(JSON.stringify(Array.from(themeInfo.themeEditRecorder?.entries())))
-    // console.log(JSON.stringify(Array.from(editedTheme.entries())))
+    // console.log(JSON.stringify(Array.from(themeInfo.themeMapEditRecorder.entries())))
+    // console.log(JSON.stringify(Array.from(editedThemeMap.entries())))
 
-    console.log(JSON.stringify(Array.from(themeInfo.themeMap.entries())))
-    console.log(JSON.stringify(Array.from(themeInfo.themeMapEditRecorder.entries())))
-    console.log(JSON.stringify(Array.from(editedThemeMap.entries())))
-
-    // console.log(JSON.stringify(Array.from(themeVars.entries())))
+    console.log(JSON.stringify(Array.from(theme.entries())))
   }
 
   return (
@@ -38,15 +38,15 @@ const Page: FC = () => {
         <Button onClick={() => setThemeInfo(initValue)}>初始化</Button>
       </div>
       <div>
-        <Button onClick={() => edit.theme.add('@b', { desc: 'b', value: 'b' })}>加主题元</Button>
-        <Button onClick={() => edit.theme.delete('@b')}>删主题元</Button>
-        <Button onClick={() => edit.theme.change('@a', [])}>改主题元</Button>
-        <Button onClick={() => edit.theme.changeDesc('@a', '描述')}>改主题元描述</Button>
-        <Button onClick={() => edit.theme.undo()}>撤销主题更改</Button>
+        <Button onClick={() => edit.themeVar.add('@b', { desc: 'b', value: 'b' })}>加主题元</Button>
+        <Button onClick={() => edit.themeVar.delete('@b')}>删主题元</Button>
+        <Button onClick={() => edit.themeVar.change('@a', [])}>改主题元</Button>
+        <Button onClick={() => edit.themeVar.changeDesc('@a', '描述')}>改主题元描述</Button>
+        <Button onClick={() => edit.themeVar.undo()}>撤销主题变量更改</Button>
       </div>
       <div>
         <Button onClick={() => {
-          edit.themeMap.add('subThemeMap','子映射')
+          edit.themeMap.add('subThemeMap', '子映射')
           edit.themeMap.addPropertyMap('subThemeMap.example', { desc: 'b', value: 'b' })
         }}
         >

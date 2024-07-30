@@ -1,4 +1,4 @@
-/********************  主题系列类型    ********************/
+/********************  主题变量系列类型    ********************/
 
 /** 主题元值基础类型 数字、字符串(可被识别为颜色) */
 export type ThemeItemBaseValue<T> = number | string | T
@@ -14,25 +14,25 @@ export type ThemeItem<T> = {
   value: ThemeItemValue<T>
 }
 
-/** 主题 */
-export type Theme<T> = Map<string, ThemeItem<T>>
+/** 主题变量 */
+export type ThemeVar<T> = Map<string, ThemeItem<T>>
 
-/********************  主题系列类型结束    ********************/
+/********************  主题变量系列类型结束    ********************/
 
 
 
-/********************  主题变更系列类型    ********************/
+/********************  主题变量变更系列类型    ********************/
 
 /** 变更类型 */
-export type ThemeEdit<T> = { type: 'add', value: ThemeItem<T> }
+export type ThemeVarEdit<T> = { type: 'add', value: ThemeItem<T> }
   | { type: 'delete' }
   | { type: 'change', value: ThemeItemValue<T> }
   | { type: 'descChange', desc: string }
 
-/** 主题变更 */
-export type ThemeEditRecorder<T> = Map<string, ThemeEdit<T>>
+/** 主题变量变更 */
+export type ThemeVarEditRecorder<T> = Map<string, ThemeVarEdit<T>>
 
-/********************  主题变更系列类型结束    ********************/
+/********************  主题变量变更系列类型结束    ********************/
 
 
 
@@ -44,82 +44,82 @@ export function checkThemeItemName(name: string): void | never {
 }
 
 /** 创建当前变更的浅复制 */
-function copyThemeEditRecorder<T>(themeEditRecorder: ThemeEditRecorder<T>): ThemeEditRecorder<T> {
-  const newThemeEditRecorder: ThemeEditRecorder<T> = new Map(themeEditRecorder.entries())
-  return newThemeEditRecorder
+function copyThemeVarEditRecorder<T>(themeVarEditRecorder: ThemeVarEditRecorder<T>): ThemeVarEditRecorder<T> {
+  const newThemeVarEditRecorder: ThemeVarEditRecorder<T> = new Map(themeVarEditRecorder.entries())
+  return newThemeVarEditRecorder
 }
 
 /** 创建或替换与`name`同名的主题元.创建一个新变更反映此次变更. */
-export function addThemeItem<T>(themeEditRecorder: ThemeEditRecorder<T>, name: string, value: ThemeItem<T>) {
+export function addThemeItem<T>(themeVarEditRecorder: ThemeVarEditRecorder<T>, name: string, value: ThemeItem<T>) {
   checkThemeItemName(name)
-  const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
-  newThemeEditRecorder.set(name, { type: 'add', value })
-  return newThemeEditRecorder
+  const newThemeVarEditRecorder = copyThemeVarEditRecorder(themeVarEditRecorder)
+  newThemeVarEditRecorder.set(name, { type: 'add', value })
+  return newThemeVarEditRecorder
 }
 
 /** 删除与`name`同名的主题元.创建一个新变更反映此次变更. */
-export function deleteThemeItem<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T>, name: string) {
-  const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
-  if (theme.has(name)) {
-    newThemeEditRecorder.set(name, { type: 'delete' })
+export function deleteThemeItem<T>(themeVar: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>, name: string) {
+  const newThemeVarEditRecorder = copyThemeVarEditRecorder(themeVarEditRecorder)
+  if (themeVar.has(name)) {
+    newThemeVarEditRecorder.set(name, { type: 'delete' })
   } else {
-    newThemeEditRecorder.delete(name)
+    newThemeVarEditRecorder.delete(name)
   }
-  return newThemeEditRecorder
+  return newThemeVarEditRecorder
 }
 
 /** 修改与`name`同名的主题元.创建一个新变更反映此次变更. */
-export function changeThemeItem<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T>, name: string, value: ThemeItemValue<T>) {
-  const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
-  const record = newThemeEditRecorder.get(name)
+export function changeThemeItem<T>(themeVar: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>, name: string, value: ThemeItemValue<T>) {
+  const newThemeVarEditRecorder = copyThemeVarEditRecorder(themeVarEditRecorder)
+  const record = newThemeVarEditRecorder.get(name)
   if (record) {
     switch (record.type) {
       case 'delete':
       case 'change': {
-        newThemeEditRecorder.set(name, { type: 'change', value })
+        newThemeVarEditRecorder.set(name, { type: 'change', value })
         break
       }
       case 'add': {
-        newThemeEditRecorder.set(name, {
+        newThemeVarEditRecorder.set(name, {
           type: 'add',
           value: { desc: record.value.desc, value }
         })
         break
       }
       case 'descChange': {
-        newThemeEditRecorder.set(name, {
+        newThemeVarEditRecorder.set(name, {
           type: 'add',
           value: { desc: record.desc, value }
         })
         break
       }
     }
-  } else if (theme.has(name)) {
-    newThemeEditRecorder.set(name, { type: 'change', value })
+  } else if (themeVar.has(name)) {
+    newThemeVarEditRecorder.set(name, { type: 'change', value })
   }
-  return newThemeEditRecorder
+  return newThemeVarEditRecorder
 }
 
 /** 修改与`name`同名的主题元的描述.创建一个新变更反映此次变更. */
-export function changeThemeItemDesc<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T>, name: string, desc: string) {
-  const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
-  const record = newThemeEditRecorder.get(name)
+export function changeThemeItemDesc<T>(theme: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>, name: string, desc: string) {
+  const newThemeVarEditRecorder = copyThemeVarEditRecorder(themeVarEditRecorder)
+  const record = newThemeVarEditRecorder.get(name)
   if (record) {
     switch (record.type) {
       case 'delete':
       case 'descChange': {
-        newThemeEditRecorder.set(name, { type: 'descChange', desc })
+        newThemeVarEditRecorder.set(name, { type: 'descChange', desc })
         break
       }
       case 'add': {
-        newThemeEditRecorder.set(name, {
+        newThemeVarEditRecorder.set(name, {
           type: 'add',
           value: { value: record.value.value, desc }
         })
         break
       }
       case 'change': {
-        newThemeEditRecorder.set(name, {
+        newThemeVarEditRecorder.set(name, {
           type: 'add',
           value: { value: record.value, desc: desc }
         })
@@ -127,25 +127,25 @@ export function changeThemeItemDesc<T>(theme: Theme<T>, themeEditRecorder: Theme
       }
     }
   } else if (theme.has(name)) {
-    newThemeEditRecorder.set(name, { type: 'descChange', desc })
+    newThemeVarEditRecorder.set(name, { type: 'descChange', desc })
   }
-  return newThemeEditRecorder
+  return newThemeVarEditRecorder
 }
 
 /** 撤销key指示的子映射的变更.创建一个新变更反映此次变更. */
-export function undoThemeChange<T>(themeEditRecorder: ThemeEditRecorder<T>, name?: string) {
+export function undoThemeVarChange<T>(themeVarEditRecorder: ThemeVarEditRecorder<T>, name?: string) {
   if (name === undefined) {
-    return new Map() as ThemeEditRecorder<T>
+    return new Map() as ThemeVarEditRecorder<T>
   }
-  const newThemeEditRecorder = copyThemeEditRecorder(themeEditRecorder)
-  newThemeEditRecorder.delete(name)
-  return newThemeEditRecorder
+  const newThemeVarEditRecorder = copyThemeVarEditRecorder(themeVarEditRecorder)
+  newThemeVarEditRecorder.delete(name)
+  return newThemeVarEditRecorder
 }
 
-/** 取得应用变更后的主题 */
-export function getEditedTheme<T>(theme: Theme<T>, themeEditRecorder: ThemeEditRecorder<T>): Theme<T> {
-  const editedTheme: Theme<T> = new Map(theme.entries())
-  themeEditRecorder.entries().forEach(([name, record]) => {
+/** 取得应用变更后的主题变量 */
+export function getEditedThemeVar<T>(theme: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>): ThemeVar<T> {
+  const editedTheme: ThemeVar<T> = new Map(theme.entries())
+  themeVarEditRecorder.entries().forEach(([name, record]) => {
     switch (record.type) {
       case 'delete': {
         editedTheme.delete(name)
@@ -175,7 +175,7 @@ export function getEditedTheme<T>(theme: Theme<T>, themeEditRecorder: ThemeEditR
   return editedTheme
 }
 
-/** 从拓展主题名中获取信息 
+/** 从拓展主题元名称中获取信息 
  * @returns 返回null表明是普通字符串,否则返回信息
 */
 export function getInfoFromExtendThemeItemName(name: string) {

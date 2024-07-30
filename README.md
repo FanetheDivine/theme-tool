@@ -9,8 +9,8 @@ graph TD
 * 主题和映射可以分别变更,并选择是否应用变更
 * 变更包括主题和映射增、删、改
 ## 主题体系的设计
-### 主题 `@/lib/Theme/Theme.ts`  
-主题是名称与主题元的映射关系.主题元是对应名称所指示的描述和值.  
+### 主题元和主题变量 `@/lib/Theme/ThemeVar.ts`  
+主题变量是名称与主题元的映射关系.主题元是对应名称所指示的描述和值.  
 ```ts
 /** 主题元值基础类型 数字、字符串(可被识别为颜色) */
 type ThemeItemBaseValue<T> = number | string | T
@@ -27,7 +27,7 @@ type ThemeItem<T> = {
 }
 
 /** 主题 */
-type Theme<T> = Map<string, ThemeItem<T>>
+type ThemeVar<T> = Map<string, ThemeItem<T>>
 ```
 主题元值的类型采用泛型,这使得它可以在字符串和数字的基础上进行拓展
 #### 约定
@@ -45,19 +45,19 @@ Map
     '@title-font-size' => { desc:'文本主字号', value:24 }
 }
 ```
-#### 主题变更
-主题变更是主题元名称与变更结果的映射
+#### 主题变量变更
+主题变量变更是主题元名称与变更结果的映射
 ```ts
 /** 变更类型 */
-type ThemeEdit<T> = { type: 'add', value: ThemeItem<T> }
+type ThemeVarEdit<T> = { type: 'add', value: ThemeItem<T> }
   | { type: 'delete' }
   | { type: 'change', value: ThemeItemValue<T> }
   | { type: 'descChange', desc: string }
 
-/** 主题变更 */
-type ThemeEditRecorder<T> = Map<string, ThemeEdit<T>>
+/** 主题变量变更 */
+type ThemeVarEditRecorder<T> = Map<string, ThemeEdit<T>>
 ```
-##### 主题变更的约定
+##### 主题变量变更的约定
 * 映射的key是合法主题元名称,但不必包含在主题中.
 * 对变更的解释  
   假设存在变更`key => { type, value(或desc) }`
@@ -66,7 +66,7 @@ type ThemeEditRecorder<T> = Map<string, ThemeEdit<T>>
   - 若type为'descChange'且key在主题中,则desc被视为该主题元的描述;
   - 若type为'add'且key在主题中,视为同名主题元被value完全替换;
   - 若type为'add'且key不在主题中,则视作主题中增加映射`key => value`.
-##### 主题变更示例
+##### 主题变量变更示例
 变更
 ```ts
 Map
@@ -211,35 +211,29 @@ Map
     }
 }
 ```
-### 主题变量 `@/lib/Theme/index.ts` 
-主题变量是主题应用于映射上的结果
+### 主题 `@/lib/Theme/index.ts` 
+主题是主题变量应用于映射上的结果
 ```ts
-/** 主题变量属性值基础类型 字符串、数字或者主题元的值 */
-type PropertyBaseValue<T> = PropertyMapValue | ThemeItemValue<T>
+/** 主题属性值基础类型 字符串、数字或者主题元的值 */
+export type PropertyBaseValue<T> = PropertyMapValue | ThemeItemValue<T>
 
-/** 主题变量属性值类型 基础类型或它的嵌套数组 */
-type PropertyValue<T> = PropertyBaseValue<T> | PropertyValue<T>[]
+/** 主题属性值类型 基础类型或它的嵌套数组 */
+export type PropertyValue<T> = PropertyBaseValue<T> | PropertyValue<T>[]
 
-/** 每个变量的基础类型 */
-type ThemeVarsItemBaseType = {
-  /** 对当前层级主题变量的描述 */
-  desc: string
-}
-
-/** 主题变量属性类型 */
-type Property<T> = ThemeVarsItemBaseType & {
+/** 主题属性类型 */
+export type Property<T> = ThemeMapItemBaseType & {
   /** 变量值 属性值基础类型或者它的数组 */
   value: PropertyValue<T>
 }
 
-/** 具有下层结构的主题变量 */
-type SubThemeVars<T> = ThemeVarsItemBaseType & {
+/** 具有下层结构的主题子主题 */
+export type SubTheme<T> = ThemeMapItemBaseType & {
   /** 下层结构 */
-  children: ThemeVars<T>
+  children: Theme<T>
 }
 
-/** 主题变量类型 */
-type ThemeVars<T> = Map<string, Property<T> | SubThemeVars<T>>
+/** 主题 */
+export type Theme<T> = Map<string, Property<T> | SubTheme<T>>
 ```
 #### 示例
 以前文所述主题、映射及其变更为例,生成以下主题变量
@@ -306,7 +300,7 @@ import { ThemeProvider } from "@/utils/theme";
     edit.theme.// add,delete,change,changeDesc,undo 增删改撤
     edit.themeMap.// add,addPropertyMap,delete,change,changeDesc,undo 增加子映射或者属性映射
     // 取得应用变更的主题、映射和主题变量
-    const editedTheme = getEditedTheme(themeInfo.theme,themeInfo.themeEditRecorder)
+    const editedTheme = getEditedTheme(themeInfo.themeVar,themeInfo.themeVarEditRecorder)
     const editedThemeMap = getEditedThemeMap(themeInfo.themeMap,themeInfo.themeMapEditRecorder)
     const themeVars = getThemeVars(editedTheme,editedThemeMap)
     console.log(themeVars.entries())
@@ -318,8 +312,8 @@ import { ThemeProvider } from "@/utils/theme";
   `(name: string)=>void|never`
   是否是合法主题元名称
 * `getEditedTheme`
-  `(theme: Theme, themeEditRecorder: ThemeEditRecorder)=>Theme`
-  取得应用变更后的主题
+  `(themeVar: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>ThemeVar<T>`
+  取得应用变更后的主题变量
 * `getInfoFromExtendThemeItemName`
   `(name: string)=>null|{ themeItemName: string; level: number; opacity: number; }`
   从拓展主题名中获取信息
@@ -330,10 +324,10 @@ import { ThemeProvider } from "@/utils/theme";
   `(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder): ThemeMap`  
   取得应用变更后的映射
 * `getValue`
-  `(theme: Theme, value: PropertyMapValue)=> PropertyValue`
+  `(themeVar: ThemeVar<T>, value: PropertyMapValue)=> PropertyValue<T>`
   从属性映射的`value`获取具体值
 * `getThemeVars`
-  `<T=any>(theme: Theme, themeMap: ThemeMap)=>T`
+  `(themeVar: ThemeVar<T>, themeMap: ThemeMap)=>ThemeVars<T>`
   取得主题变量
 ## 主题的展示
 ### 展示当前主题、映射

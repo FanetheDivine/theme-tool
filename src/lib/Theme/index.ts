@@ -1,37 +1,37 @@
 import { createContext, createElement, FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
-import { type ThemeItem, type Theme, type ThemeEditRecorder, addThemeItem, deleteThemeItem, changeThemeItem, getInfoFromExtendThemeItemName, ThemeItemValue, checkThemeItemName, changeThemeItemDesc, undoThemeChange } from './Theme'
+import { type ThemeItem, type ThemeVar, type ThemeVarEditRecorder, addThemeItem, deleteThemeItem, changeThemeItem, getInfoFromExtendThemeItemName, ThemeItemValue, checkThemeItemName, changeThemeItemDesc, undoThemeVarChange } from './ThemeVar'
 import { addThemeMap, addThemeMapPropertyMap, changeThemeMap, changeThemeMapDesc, deleteThemeMap, isPropertyMap, PropertyMapValue, SubThemeMap, ThemeMapItemBaseType, undoThemeMapChange, type PropertyMap, type ThemeMap, type ThemeMapEditRecorder } from './ThemeMap'
 import { generate } from '@ant-design/colors';
 import TinyColor2 from 'tinycolor2'
 
-export type { ThemeItemBaseValue, ThemeItemValue, ThemeItem, Theme, ThemeEdit, ThemeEditRecorder } from './Theme'
+export type { ThemeItemBaseValue, ThemeItemValue, ThemeItem, ThemeVar, ThemeVarEdit, ThemeVarEditRecorder } from './ThemeVar'
 export type { PropertyMapBaseValue, PropertyMapValue, ThemeMapItemBaseType, PropertyMap, SubThemeMap, ThemeMap, ThemeMapEdit, ThemeMapEditRecorder } from './ThemeMap'
-export { getEditedTheme, checkThemeItemName, getInfoFromExtendThemeItemName } from './Theme'
+export { getEditedThemeVar, checkThemeItemName, getInfoFromExtendThemeItemName } from './ThemeVar'
 export { getEditedThemeMap, isPropertyMap } from './ThemeMap'
 
 /** 主题信息 */
 export type ThemeInfo<T> = {
-  theme: Theme<T>,
+  themeVar: ThemeVar<T>,
   themeMap: ThemeMap,
-  themeEditRecorder: ThemeEditRecorder<T>,
+  themeVarEditRecorder: ThemeVarEditRecorder<T>,
   themeMapEditRecorder: ThemeMapEditRecorder
 }
 
 /** 将类型中的某些属性变为可选 */
 type Option<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 /** 用于初始化的主题 */
-type InitThemeInfo<T> = Option<ThemeInfo<T>, 'themeEditRecorder' | 'themeMapEditRecorder'>
+type InitThemeInfo<T> = Option<ThemeInfo<T>, 'themeVarEditRecorder' | 'themeMapEditRecorder'>
 
 /** 从initTheme得到主题state的值.这个函数会检查主题元名称. */
 function getInitValue<T>(initThemeInfo?: InitThemeInfo<T>): ThemeInfo<T> | undefined {
   if (!initThemeInfo) {
     return undefined
   }
-  initThemeInfo.theme.keys().forEach(checkThemeItemName)
+  initThemeInfo.themeVar.keys().forEach(checkThemeItemName)
   const initValue = {
-    theme: initThemeInfo.theme,
+    themeVar: initThemeInfo.themeVar,
     themeMap: initThemeInfo.themeMap,
-    themeEditRecorder: initThemeInfo.themeEditRecorder ?? new Map() as ThemeEditRecorder<T>,
+    themeVarEditRecorder: initThemeInfo.themeVarEditRecorder ?? new Map() as ThemeVarEditRecorder<T>,
     themeMapEditRecorder: initThemeInfo.themeMapEditRecorder ?? new Map() as ThemeMapEditRecorder
   }
   return initValue
@@ -63,9 +63,9 @@ export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
           return fn(themeInfo)
         })
       }
-      const setThemeEditRecorder = (fn: (themeInfo: ThemeInfo<T>) => ThemeEditRecorder<T>) => {
+      const setThemeVarEditRecorder = (fn: (themeInfo: ThemeInfo<T>) => ThemeVarEditRecorder<T>) => {
         safeSetThemeInfo(themeInfo => {
-          return { ...themeInfo, themeEditRecorder: fn(themeInfo) }
+          return { ...themeInfo, themeVarEditRecorder: fn(themeInfo) }
         })
       }
       const setThemeMapEditRecorder = (fn: (themeInfo: ThemeInfo<T>) => ThemeMapEditRecorder) => {
@@ -73,37 +73,37 @@ export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
           return { ...themeInfo, themeMapEditRecorder: fn(themeInfo) }
         })
       }
-      const theme = {
+      const themeVar = {
         /** 创建或替换与`name`同名的主题元 */
         add: (name: string, value: ThemeItem<T>) => {
-          setThemeEditRecorder(themeInfo => {
-            return addThemeItem(themeInfo.themeEditRecorder, name, value)
+          setThemeVarEditRecorder(themeInfo => {
+            return addThemeItem(themeInfo.themeVarEditRecorder, name, value)
           })
         },
         /** 删除与`name`同名的主题元 */
         delete: (name: string) => {
-          setThemeEditRecorder(themeInfo => {
-            return deleteThemeItem(themeInfo.theme, themeInfo.themeEditRecorder, name)
+          setThemeVarEditRecorder(themeInfo => {
+            return deleteThemeItem(themeInfo.themeVar, themeInfo.themeVarEditRecorder, name)
           })
         },
         /** 修改与`name`同名的主题元 */
         change: (name: string, value: ThemeItemValue<T>) => {
-          setThemeEditRecorder(themeInfo => {
-            return changeThemeItem(themeInfo.theme, themeInfo.themeEditRecorder, name, value)
+          setThemeVarEditRecorder(themeInfo => {
+            return changeThemeItem(themeInfo.themeVar, themeInfo.themeVarEditRecorder, name, value)
           })
         },
         /** 修改与`name`同名的主题元的描述 */
         changeDesc: (name: string, desc: string) => {
-          setThemeEditRecorder(themeInfo => {
-            return changeThemeItemDesc(themeInfo.theme, themeInfo.themeEditRecorder, name, desc)
+          setThemeVarEditRecorder(themeInfo => {
+            return changeThemeItemDesc(themeInfo.themeVar, themeInfo.themeVarEditRecorder, name, desc)
           })
         },
-        /** 撤销主题变更
+        /** 撤销主题变量的变更
          * @param name 寻找对同名主题元的变更.不传会清空所有变更.
         */
         undo: (name?: string) => {
-          setThemeEditRecorder(themeInfo => {
-            return undoThemeChange(themeInfo.themeEditRecorder, name)
+          setThemeVarEditRecorder(themeInfo => {
+            return undoThemeVarChange(themeInfo.themeVarEditRecorder, name)
           })
         }
       }
@@ -150,8 +150,8 @@ export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
       }
 
       return {
-        /** 主题变更函数 */
-        theme,
+        /** 主题变量变更函数 */
+        themeVar,
         /** 映射变更函数 */
         themeMap
       }
@@ -179,38 +179,38 @@ export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
   }
 }
 
-/********************  主题变量系列类型    ********************/
+/********************  主题系列类型    ********************/
 
-/** 主题变量属性值基础类型 字符串、数字或者主题元的值 */
+/** 主题属性值基础类型 字符串、数字或者主题元的值 */
 export type PropertyBaseValue<T> = PropertyMapValue | ThemeItemValue<T>
 
-/** 主题变量属性值类型 基础类型或它的嵌套数组 */
+/** 主题属性值类型 基础类型或它的嵌套数组 */
 export type PropertyValue<T> = PropertyBaseValue<T> | PropertyValue<T>[]
 
-/** 主题变量属性类型 */
+/** 主题属性类型 */
 export type Property<T> = ThemeMapItemBaseType & {
   /** 变量值 属性值基础类型或者它的数组 */
   value: PropertyValue<T>
 }
 
-/** 具有下层结构的主题变量 */
-export type SubThemeVars<T> = ThemeMapItemBaseType & {
+/** 具有下层结构的主题子主题 */
+export type SubTheme<T> = ThemeMapItemBaseType & {
   /** 下层结构 */
-  children: ThemeVars<T>
+  children: Theme<T>
 }
 
-/** 主题变量类型 */
-export type ThemeVars<T> = Map<string, Property<T> | SubThemeVars<T>>
+/** 主题 */
+export type Theme<T> = Map<string, Property<T> | SubTheme<T>>
 
-/********************  主题变量系列类型结束    ********************/
+/********************  主题系列类型结束    ********************/
 
 
 
 /** 从属性映射的`value`获取具体值 */
-export function getValue<T>(theme: Theme<T>, value: PropertyMapValue): PropertyValue<T> {
+export function getValue<T>(themeVar: ThemeVar<T>, value: PropertyMapValue): PropertyValue<T> {
   /** 取得非数组映射值应用主题后的结果 */
   if (Array.isArray(value)) {
-    return value.map(v => getValue(theme, v))
+    return value.map(v => getValue(themeVar, v))
   } else {
     if (typeof value !== 'string') {
       return value
@@ -219,7 +219,7 @@ export function getValue<T>(theme: Theme<T>, value: PropertyMapValue): PropertyV
     if (!info) {
       return value
     }
-    const themeItem = theme.get(info.themeItemName)
+    const themeItem = themeVar.get(info.themeItemName)
     if (!themeItem) {
       return value
     }
@@ -231,15 +231,15 @@ export function getValue<T>(theme: Theme<T>, value: PropertyMapValue): PropertyV
   }
 }
 
-/** 取得主题变量 */
-export function getThemeVars<T>(theme: Theme<T>, themeMap: ThemeMap): ThemeVars<T> {
-  const themeVars: ThemeVars<T> = new Map()
+/** 取得主题 */
+export function getTheme<T>(themeVar: ThemeVar<T>, themeMap: ThemeMap): Theme<T> {
+  const theme: Theme<T> = new Map()
   themeMap.entries().forEach(([key, value]) => {
     if (isPropertyMap(value)) {
-      themeVars.set(key, { desc: value.desc, value: getValue(theme, value.value) })
+      theme.set(key, { desc: value.desc, value: getValue(themeVar, value.value) })
     } else {
-      themeVars.set(key, { desc: value.desc, children: getThemeVars(theme, value.children) })
+      theme.set(key, { desc: value.desc, children: getTheme(themeVar, value.children) })
     }
   })
-  return themeVars
+  return theme
 }
