@@ -1,62 +1,19 @@
 'use client'
 
-import { getEditedThemeVar, getEditedThemeMap, getTheme } from "@/lib/Theme";
-import { useTheme } from "@/utils/theme";
+import { BaseStringValue } from "@/utils/BaseStringValue";
 import { Button } from "antd";
-import { FC } from "react";
-
-const initValue = {
-  themeVar: new Map([
-    ['@a', { desc: 'desc', value: [1, ['a']] }]
-  ]),
-  themeMap: new Map([
-    ['example', { desc: 'example', value: ['t', ['@a', '@b']] }]
-  ])
-}
-
+import { FC, useState } from "react";
+import { debounce } from 'lodash-es'
 
 const Page: FC = () => {
-  const { themeInfo, edit, setThemeInfo } = useTheme()
-  if (themeInfo) {
-    const editedThemeVar = getEditedThemeVar(themeInfo.themeVar, themeInfo.themeVarEditRecorder)
-    const editedThemeMap = getEditedThemeMap(themeInfo.themeMap, themeInfo.themeMapEditRecorder)
-    const theme = getTheme(editedThemeVar, editedThemeMap)
-    // console.log(JSON.stringify(Array.from(themeInfo.themeVar.entries())))
-    // console.log(JSON.stringify(Array.from(themeInfo.themeVarEditRecorder?.entries())))
-    // console.log(JSON.stringify(Array.from(editedThemeVar.entries())))
-
-    // console.log(JSON.stringify(Array.from(themeInfo.themeMap.entries())))
-    // console.log(JSON.stringify(Array.from(themeInfo.themeMapEditRecorder.entries())))
-    // console.log(JSON.stringify(Array.from(editedThemeMap.entries())))
-
-    console.log(JSON.stringify(Array.from(theme.entries())))
-  }
+  const initColor = 'rgba(0,255,0,1)'
+  const [value, setValue] = useState(initColor)
 
   return (
-    <div >
-      <div>
-        <Button onClick={() => setThemeInfo(initValue)}>初始化</Button>
-      </div>
-      <div>
-        <Button onClick={() => edit.themeVar.add('@b', { desc: 'b', value: 'b' })}>加主题元</Button>
-        <Button onClick={() => edit.themeVar.delete('@b')}>删主题元</Button>
-        <Button onClick={() => edit.themeVar.change('@a', [])}>改主题元</Button>
-        <Button onClick={() => edit.themeVar.changeDesc('@a', '描述')}>改主题元描述</Button>
-        <Button onClick={() => edit.themeVar.undo()}>撤销主题变量更改</Button>
-      </div>
-      <div>
-        <Button onClick={() => {
-          edit.themeMap.add('subThemeMap', '子映射')
-          edit.themeMap.addPropertyMap('subThemeMap.example', { desc: 'b', value: 'b' })
-        }}
-        >
-          加模板
-        </Button>
-        <Button onClick={() => edit.themeMap.delete('subThemeMap')}>删模板</Button>
-        <Button onClick={() => edit.themeMap.change('example', 1)}>改模板</Button>
-        <Button onClick={() => edit.themeMap.changeDesc('example', '描述')}>改模板描述</Button>
-        <Button onClick={() => edit.themeMap.undo()}>撤销映射更改</Button>
-      </div>
+    <div className='flex flex-col items-start'>
+      {value}
+      <Button onClick={() => setValue('#' + Math.random().toString(16).slice(2, 8))} type='primary'>重置</Button>
+      <BaseStringValue text={value} value={value} onChange={debounce(setValue, 1000)} className='m-4 w-60'></BaseStringValue>
     </div>
   )
 }
