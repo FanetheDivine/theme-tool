@@ -1,20 +1,17 @@
-'use client'
-
-import { BaseStringValue } from "@/utils/BaseStringValue";
-import { Button } from "antd";
-import { FC, useState } from "react";
-import { debounce } from 'lodash-es'
+import { FC } from "react";
+import { ThemeVar } from "./components/ThemeVar";
+import { Divider } from "antd";
+import { ThemeContent } from "./components/ThemeContent";
+import { ThemeMap } from './components/ThemeMap'
 
 const Page: FC = () => {
-  const initColor = 'rgba(0,255,0,1)'
-  const [value, setValue] = useState(initColor)
-
   return (
-    <div className='flex flex-col items-start'>
-      {value}
-      <Button onClick={() => setValue('#' + Math.random().toString(16).slice(2, 8))} type='primary'>重置</Button>
-      <BaseStringValue text={value} value={value} onChange={debounce(setValue, 1000)} className='m-4 w-60'></BaseStringValue>
-    </div>
+    <main className='flex w-full h-full'>
+      <ThemeVar className='flex-grow-0 w-45 px-2 py-1'></ThemeVar>
+      <Divider type='vertical' className='h-full bg-gray'></Divider>
+      <ThemeContent className='flex-auto'></ThemeContent>
+      <ThemeMap></ThemeMap>
+    </main>
   )
 }
 
