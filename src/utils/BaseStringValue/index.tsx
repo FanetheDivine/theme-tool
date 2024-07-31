@@ -11,7 +11,9 @@ type BaseStringValueProps = {
   value: string,
   onChange: (newValue: string) => void,
   style?: CSSProperties,
-  className?: string
+  className?: string,
+  // 是否将value视作纯字符串
+  pureString?: boolean
 }
 
 /** 
@@ -25,7 +27,7 @@ export const BaseStringValue: FC<BaseStringValueProps> = props => {
   const [key, onInnerChange] = useCompWithMutation(props.value, props.onChange, isEqual)
   return (
     <BaseStringValueInner key={key}
-      defaultText={props.text} defaultValue={props.value}
+      defaultText={props.text} defaultValue={props.value} pureString={props.pureString}
       onChange={onInnerChange}
     />
   )
@@ -38,7 +40,9 @@ type BaseStringValueInnerProps = {
   defaultValue: string,
   onChange: (newValue: string) => void,
   style?: CSSProperties,
-  className?: string
+  className?: string,
+  // 是否将value视作纯字符串
+  pureString?: boolean
 }
 
 const BaseStringValueInner: FC<BaseStringValueInnerProps> = props => {
@@ -55,7 +59,7 @@ const BaseStringValueInner: FC<BaseStringValueInnerProps> = props => {
   )
 
   const isColor = useCreation(() => {
-    return tinycolor(props.defaultValue).isValid()
+    return !props.pureString && tinycolor(props.defaultValue).isValid()
   }, [])
 
   return (
@@ -65,7 +69,7 @@ const BaseStringValueInner: FC<BaseStringValueInnerProps> = props => {
         const newText = e.target.value
         props.onChange?.(newText)
         setText(newText)
-        if (tinycolor(newText).isValid()) {
+        if (isColor && tinycolor(newText).isValid()) {
           setColor(newText)
         }
       }}

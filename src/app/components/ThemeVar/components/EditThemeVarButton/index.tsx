@@ -1,11 +1,12 @@
-import { getEditedThemeVar, checkThemeItemName } from "@/lib/Theme"
+import { getEditedThemeVar, checkThemeItemName, isEditedThemeItem, isOriginThemeItem, isDeletedThemeItem } from "@/lib/Theme"
 import { BaseStringValue } from "@/utils/BaseStringValue"
 import { NumberValue } from "@/utils/NumberValue"
 import { useTheme } from "@/utils/theme"
 import { EditOutlined, DeleteOutlined, UndoOutlined, PlusOutlined } from "@ant-design/icons"
-import { Button, Modal, Card, Form, Input, Select } from "antd"
+import { Button, Modal, Card, Form, Input, Select, Divider, Typography } from "antd"
 import { useForm, useWatch } from "antd/es/form/Form"
-import { useState } from "react"
+import classNames from "classnames"
+import React, { FC, PropsWithChildren, ReactNode, useState } from "react"
 
 /** 用于打开主题编辑弹窗 */
 export const EditThemeVarButton = () => {
@@ -13,6 +14,7 @@ export const EditThemeVarButton = () => {
   const [open, setOpen] = useState(false)
   if (!themeInfo) return null
   const editedThemeVar = getEditedThemeVar(themeInfo.themeVar, themeInfo.themeVarEditRecorder)
+  const deletedItems = themeInfo.themeVar.keys().filter(name => isDeletedThemeItem(name, themeInfo.themeVarEditRecorder)).toArray()
   return (
     <>
       <Button onClick={() => setOpen(true)} type='primary' icon={<EditOutlined></EditOutlined>}>编辑主题变量</Button>
@@ -20,33 +22,77 @@ export const EditThemeVarButton = () => {
         <div className='flex flex-wrap'>
           {
             editedThemeVar.entries().toArray().map(([name]) => {
-              const editType = themeInfo.themeVarEditRecorder.get(name)?.type
-              const isEdited = editType === 'change' || editType === 'descChange'
               return (
-                <Card key={name} size='small' className='my-2 mx-4'>
-                  <div className='flex gap-2 items-center'>
-                    <span className='text-xl'>{name}</span>
-                    <EditSingleThemeVarIcon name={name}></EditSingleThemeVarIcon>
-                    <DeleteOutlined title='删除变量' onClick={() => edit.themeVar.delete(name)}></DeleteOutlined>
-                    {
-                      isEdited
-                        ? <UndoOutlined title='撤销变更' onClick={() => edit.themeVar.undo(name)}></UndoOutlined>
-                        : null
+                <ThemeVarCard key={name} name={name}>
+                  <DeleteOutlined title='删除' onClick={() => {
+                    const deleteVar = () => edit.themeVar.delete(name)
+                    if (isOriginThemeItem(name, themeInfo.themeVar, themeInfo.themeVarEditRecorder)) {
+                      deleteVar()
+                    } else {
+                      Modal.confirm({
+                        title: '确定删除？',
+                        content: '这个主题元不在初始的主题变量中,它的删除是不可逆的。',
+                        onOk: deleteVar
+                      })
                     }
-                  </div>
-                </Card>
+                  }}
+                  />
+                  {
+                    isEditedThemeItem(name, themeInfo.themeVarEditRecorder)
+                      ? <UndoOutlined title='撤销变更' onClick={() => edit.themeVar.undo(name)}></UndoOutlined>
+                      : null
+                  }
+                </ThemeVarCard>
               )
             })
           }
-          <AddThemeVarCard className='my-2 mx-4 cursor-pointer' ></AddThemeVarCard>
+          <AddThemeVarCard></AddThemeVarCard>
         </div>
+        {
+          deletedItems.length !== 0
+            ? (
+              <>
+                <Divider></Divider>
+                <Typography.Title level={5}>已删除的变量</Typography.Title>
+                <div className='flex flex-wrap'>
+                  {
+                    deletedItems.map((name) => {
+                      return (
+                        <ThemeVarCard key={name} name={name}>
+                          <UndoOutlined title={'撤销删除'} onClick={() => edit.themeVar.undo(name)}></UndoOutlined>
+                        </ThemeVarCard>
+                      )
+                    })
+                  }
+                </div>
+              </>
+            )
+            : null
+        }
+
       </Modal>
     </>
   )
 }
 
+/** 用于展示单个主题元的卡片 */
+const ThemeVarCard: FC<PropsWithChildren & { name: ReactNode, className?: string, onClick?: () => void }> = props => {
+  return (
+    <Card size='small' className={classNames('my-2 mx-4', props.className)} onClick={props.onClick}>
+      <div className='flex gap-2 items-center'>
+        {
+          props.name
+            ? <span className='text-xl'>{props.name}</span>
+            : null
+        }
+        {props.children}
+      </div>
+    </Card>
+  )
+}
+
 /** 增加一个主题元 */
-const AddThemeVarCard = (props: { className?: string }) => {
+const AddThemeVarCard: FC = () => {
   const [form] = useForm()
   const { themeInfo, edit } = useTheme()
   const [open, setOpen] = useState(false)
@@ -76,9 +122,9 @@ const AddThemeVarCard = (props: { className?: string }) => {
 
   return (
     <>
-      <Card size='small' className={props.className} onClick={() => setOpen(true)}>
+      <ThemeVarCard name={null} className='cursor-pointer' onClick={() => setOpen(true)}>
         <PlusOutlined></PlusOutlined>
-      </Card>
+      </ThemeVarCard>
       <Modal classNames={{ wrapper: '-top-16' }} maskClosable={false} title='添加主题元' footer={null} open={open} destroyOnClose onCancel={() => setOpen(false)}>
         <Form onFinish={submit} preserve={false} form={form} layout='vertical'>
           <Form.Item name={'name'} label='名称' validateFirst
@@ -132,10 +178,4 @@ const AddThemeVarCard = (props: { className?: string }) => {
     </>
 
   )
-}
-
-
-/** 编辑单个主题元 */
-const EditSingleThemeVarIcon = (props: { name: string }) => {
-  return <EditOutlined title={props.name}></EditOutlined>
 }

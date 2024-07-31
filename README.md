@@ -359,8 +359,28 @@ import { ThemeProvider } from "@/utils/theme";
     <BaseStringValue text={value} value={value} onChange={debounce(setValue, 1000)} className='m-4 w-60'></BaseStringValue>
   </div>
 ```
-此组件可以按照字符串是否是颜色选择不同的展示方式;支持防抖方式调用,表现上是非受控组件,但可以在value突变时受控.
-### 展示当前主题、映射
-### 收集变更
-### 撤回操作
+此组件可以按照字符串是否是颜色选择不同的展示方式;支持防抖方式调用,表现上是非受控组件,但可以在value突变时受控.  
+可以设置参数pureString为true 将value完全识别为字符串
+### 展示和变更主题变量
+主题变量使用组件`@/app/ThemeVar`进行展示  
+#### 主题变量的展示
+基础类型使用上述的两种组件进行展示 嵌套的则使用侧边卡片  
+![img](./source/images/themeVar/common.png)  
+#### 主题元的变更
+可以直接变更主题变量的描述和值 也可以直接撤回  
+![img](./source/images/themeVar/change.png)  
+#### 主题变量的变更
+点击编辑主题按钮后 可以增删主题  
+![img](./source/images/themeVar/edit.png)  
+##### 删除和撤回
+撤回功能和主题展示界面一致.  
+![img](./source/images/themeVar/del_undo.png)  
+删除变量后会单独展示 也可以撤销删除  
+![img](./source/images/themeVar/deleted.png)  
+##### 新增
+点击新增按钮后 可以选择新增主题元.  
+![img](./source/images/themeVar/add.png)  
+![img](./source/images/themeVar/select.png)  
+### 展示和变更主题映射
+### 展示主题
 ## 主题的导出和导入
