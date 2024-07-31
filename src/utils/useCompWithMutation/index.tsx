@@ -21,16 +21,18 @@ import { useCallback, useRef } from "react"
  *  )
  * }
  */
-export function useCompWithMutation<T, V = T>(value: T, onChange: (newVal: V) => void, isEqual?: (val1?: T, val2?: V) => boolean) {
+export function useCompWithMutation<T>(value: T, onChange: (newVal: T) => void, isEqual?: (val1?: T, val2?: T) => boolean) {
   const keyRef = useRef<string>()
-  const changedValueRef = useRef<V>()
-  const onInnerChange = useCallback((newVal: V) => {
+  const prevValueRef = useRef(value)
+  const changedValueRef = useRef<T>()
+  const onInnerChange = useCallback((newVal: T) => {
     changedValueRef.current = newVal
     onChange(newVal)
   }, [onChange])
   const equalFn = isEqual ?? Object.is.bind(Object)
-  if (!equalFn(value, changedValueRef.current)) {
+  if (!equalFn(prevValueRef.current, value) || !equalFn(value, changedValueRef.current)) {
     keyRef.current = Date.now().toString()
   }
+  prevValueRef.current = value
   return [keyRef.current, onInnerChange] as const
 }
