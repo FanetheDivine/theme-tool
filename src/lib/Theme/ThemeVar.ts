@@ -26,9 +26,9 @@ export type ThemeVar<T> = Map<string, ThemeItem<T>>
 /** 变更类型 */
 export type ThemeVarEdit<T> = { type: 'add', value: ThemeItem<T> }
   | { type: 'delete' }
-  | { type: 'change', value: ThemeItemValue<T> }
+  | { type: 'valueChange', value: ThemeItemValue<T> }
   | { type: 'descChange', desc: string }
-
+  | { type: 'change', value: { value: ThemeItemValue<T>, desc: string } }
 /** 主题变量变更 */
 export type ThemeVarEditRecorder<T> = Map<string, ThemeVarEdit<T>>
 
@@ -69,14 +69,14 @@ export function deleteThemeItem<T>(themeVar: ThemeVar<T>, themeVarEditRecorder: 
 }
 
 /** 修改与`name`同名的主题元.创建一个新变更反映此次变更. */
-export function changeThemeItem<T>(themeVar: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>, name: string, value: ThemeItemValue<T>) {
+export function changeThemeItemValue<T>(themeVar: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>, name: string, value: ThemeItemValue<T>) {
   const newThemeVarEditRecorder = copyThemeVarEditRecorder(themeVarEditRecorder)
   const record = newThemeVarEditRecorder.get(name)
   if (record) {
     switch (record.type) {
       case 'delete':
-      case 'change': {
-        newThemeVarEditRecorder.set(name, { type: 'change', value })
+      case 'valueChange': {
+        newThemeVarEditRecorder.set(name, { type: 'valueChange', value })
         break
       }
       case 'add': {
@@ -88,14 +88,21 @@ export function changeThemeItem<T>(themeVar: ThemeVar<T>, themeVarEditRecorder: 
       }
       case 'descChange': {
         newThemeVarEditRecorder.set(name, {
-          type: 'add',
+          type: 'change',
           value: { desc: record.desc, value }
+        })
+        break
+      }
+      case 'change': {
+        newThemeVarEditRecorder.set(name, {
+          type: 'change',
+          value: { desc: record.value.desc, value }
         })
         break
       }
     }
   } else if (themeVar.has(name)) {
-    newThemeVarEditRecorder.set(name, { type: 'change', value })
+    newThemeVarEditRecorder.set(name, { type: 'valueChange', value })
   }
   return newThemeVarEditRecorder
 }
@@ -118,10 +125,17 @@ export function changeThemeItemDesc<T>(theme: ThemeVar<T>, themeVarEditRecorder:
         })
         break
       }
+      case 'valueChange': {
+        newThemeVarEditRecorder.set(name, {
+          type: 'change',
+          value: { value: record.value, desc: desc }
+        })
+        break
+      }
       case 'change': {
         newThemeVarEditRecorder.set(name, {
-          type: 'add',
-          value: { value: record.value, desc: desc }
+          type: 'change',
+          value: { value: record.value.value, desc: desc }
         })
         break
       }
@@ -151,11 +165,12 @@ export function getEditedThemeVar<T>(theme: ThemeVar<T>, themeVarEditRecorder: T
         editedTheme.delete(name)
         break
       }
-      case 'add': {
+      case 'add':
+      case 'change': {
         editedTheme.set(name, record.value)
         break
       }
-      case 'change': {
+      case 'valueChange': {
         const curValue = editedTheme.get(name)
         if (curValue) {
           editedTheme.set(name, { desc: curValue.desc, value: record.value })
@@ -169,6 +184,7 @@ export function getEditedThemeVar<T>(theme: ThemeVar<T>, themeVarEditRecorder: T
         }
         break
       }
+
     }
   })
 
@@ -205,7 +221,7 @@ export function isDeletedThemeItem<T>(name: string, themeVarEditRecorder: ThemeV
 /** 是否是被编辑的主题元 */
 export function isEditedThemeItem<T>(name: string, themeVarEditRecorder: ThemeVarEditRecorder<T>) {
   const editType = themeVarEditRecorder.get(name)?.type
-  return editType === 'change' || editType === 'descChange'
+  return editType === 'change' || editType === 'descChange' || editType==='valueChange'
 }
 
 /** 是否是主题变量中初始具有的主题元 */

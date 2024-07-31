@@ -1,5 +1,5 @@
 import { createContext, createElement, FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
-import { type ThemeItem, type ThemeVar, type ThemeVarEditRecorder, addThemeItem, deleteThemeItem, changeThemeItem, getInfoFromExtendThemeItemName, ThemeItemValue, checkThemeItemName, changeThemeItemDesc, undoThemeVarChange } from './ThemeVar'
+import { type ThemeItem, type ThemeVar, type ThemeVarEditRecorder, addThemeItem, deleteThemeItem, changeThemeItemValue, getInfoFromExtendThemeItemName, ThemeItemValue, checkThemeItemName, changeThemeItemDesc, undoThemeVarChange } from './ThemeVar'
 import { addThemeMap, addThemeMapPropertyMap, changeThemeMap, changeThemeMapDesc, deleteThemeMap, isPropertyMap, PropertyMapValue, SubThemeMap, ThemeMapItemBaseType, undoThemeMapChange, type PropertyMap, type ThemeMap, type ThemeMapEditRecorder } from './ThemeMap'
 import { generate } from '@ant-design/colors';
 import TinyColor2 from 'tinycolor2'
@@ -87,9 +87,9 @@ export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
           })
         },
         /** 修改与`name`同名的主题元的值 */
-        change: (name: string, value: ThemeItemValue<T>) => {
+        changeValue: (name: string, value: ThemeItemValue<T>) => {
           setThemeVarEditRecorder(themeInfo => {
-            return changeThemeItem(themeInfo.themeVar, themeInfo.themeVarEditRecorder, name, value)
+            return changeThemeItemValue(themeInfo.themeVar, themeInfo.themeVarEditRecorder, name, value)
           })
         },
         /** 修改与`name`同名的主题元的描述 */

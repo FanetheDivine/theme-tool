@@ -51,8 +51,9 @@ Map
 /** 变更类型 */
 type ThemeVarEdit<T> = { type: 'add', value: ThemeItem<T> }
   | { type: 'delete' }
-  | { type: 'change', value: ThemeItemValue<T> }
+  | { type: 'valueChange', value: ThemeItemValue<T> }
   | { type: 'descChange', desc: string }
+  | { type: 'change', value: { value: ThemeItemValue<T>, desc: string } }
 
 /** 主题变量变更 */
 type ThemeVarEditRecorder<T> = Map<string, ThemeEdit<T>>
@@ -62,10 +63,10 @@ type ThemeVarEditRecorder<T> = Map<string, ThemeEdit<T>>
 * 对变更的解释  
   假设存在变更`key => { type, value(或desc) }`
   - 若type为'delete',则主题中同名主题元被视为删除;
-  - 若type为'change'且key在主题中,则value被视为该主题元的新值;
+  - 若type为'valueChange'且key在主题中,则value被视为该主题元的新值;
   - 若type为'descChange'且key在主题中,则desc被视为该主题元的描述;
-  - 若type为'add'且key在主题中,视为同名主题元被value完全替换;
-  - 若type为'add'且key不在主题中,则视作主题中增加映射`key => value`.
+  - 若type为'change',视为同名主题元被value完全替换;
+  - 若type为'add',则视作主题中增加映射`key => value`.
 ##### 主题变量变更示例
 变更
 ```ts
@@ -297,7 +298,7 @@ import { ThemeProvider } from "@/utils/theme";
     // 使用新的主题
     setThemeInfo(initValue)
     //增删改撤
-    edit.theme.// add,delete,change,changeDesc,undo 增删改撤
+    edit.theme.// add,delete,changeValue,changeDesc,undo 增删改撤
     edit.themeMap.// add,addPropertyMap,delete,change,changeDesc,undo 增加子映射或者属性映射
     // 取得应用变更的主题、映射和主题变量
     const editedTheme = getEditedTheme(themeInfo.themeVar,themeInfo.themeVarEditRecorder)
@@ -341,8 +342,12 @@ import { ThemeProvider } from "@/utils/theme";
 ## 主题体系的展示和修改
 主题、映射需要按照层级结构分别展示,可以进行变更、体现变更.
 ### 基础类型
-展示类型为`ThemeItemBaseValue<T>`的数据.  
-数字使用InputNumber展示,用户自定义的泛型类型应当使用自定义组件.  
+展示类型为`ThemeItemBaseValue<T>`的数据并收集变更.  
+#### 使非受控组件具有突变能力
+项目内这是一个常见的需求,要求在突变时组件做出响应,而平常则处于非受控状态.`@/utils/useCompWithMutation`提供钩子解决这个问题.
+#### 数字
+基于`useCompWithMutation`构建数字组件`@/utils/NumberValue`
+#### 字符串和颜色
 对于字符串类型,`@/utils/BaseStringValue`提供组件进行展示.
 ```tsx
   const initColor = 'rgba(0,255,0,1)'
