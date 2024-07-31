@@ -86,7 +86,7 @@ export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
             return deleteThemeItem(themeInfo.themeVar, themeInfo.themeVarEditRecorder, name)
           })
         },
-        /** 修改与`name`同名的主题元 */
+        /** 修改与`name`同名的主题元的值 */
         change: (name: string, value: ThemeItemValue<T>) => {
           setThemeVarEditRecorder(themeInfo => {
             return changeThemeItem(themeInfo.themeVar, themeInfo.themeVarEditRecorder, name, value)
@@ -127,13 +127,13 @@ export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
             return deleteThemeMap(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapEditRecorderKey)
           })
         },
-        /** 修改key指示的属性映射 */
+        /** 修改key指示的属性映射的值 */
         change: (themeMapEditRecorderKey: string, value: PropertyMapValue) => {
           setThemeMapEditRecorder(themeInfo => {
             return changeThemeMap(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, value)
           })
         },
-        /** 修改key指示的子映射的简介 */
+        /** 修改key指示的子映射的描述 */
         changeDesc: (themeMapEditRecorderKey: string, desc: string) => {
           setThemeMapEditRecorder(themeInfo => {
             return changeThemeMapDesc(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, desc)
