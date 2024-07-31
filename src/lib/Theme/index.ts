@@ -6,7 +6,7 @@ import TinyColor2 from 'tinycolor2'
 
 export type { ThemeItemBaseValue, ThemeItemValue, ThemeItem, ThemeVar, ThemeVarEdit, ThemeVarEditRecorder } from './ThemeVar'
 export type { PropertyMapBaseValue, PropertyMapValue, ThemeMapItemBaseType, PropertyMap, SubThemeMap, ThemeMap, ThemeMapEdit, ThemeMapEditRecorder } from './ThemeMap'
-export { getEditedThemeVar, checkThemeItemName, getInfoFromExtendThemeItemName } from './ThemeVar'
+export { getEditedThemeVar, checkThemeItemName, getInfoFromExtendThemeItemName, isDeletedThemeItem, isEditedThemeItem, isOriginThemeItem } from './ThemeVar'
 export { getEditedThemeMap, isPropertyMap } from './ThemeMap'
 
 /** 主题信息 */

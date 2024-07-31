@@ -195,3 +195,20 @@ export function getInfoFromExtendThemeItemName(name: string) {
     opacity,
   }
 }
+
+/** 是否是被删除的主题元 */
+export function isDeletedThemeItem<T>(name: string, themeVarEditRecorder: ThemeVarEditRecorder<T>) {
+  const editType = themeVarEditRecorder.get(name)?.type
+  return editType === 'delete'
+}
+
+/** 是否是被编辑的主题元 */
+export function isEditedThemeItem<T>(name: string, themeVarEditRecorder: ThemeVarEditRecorder<T>) {
+  const editType = themeVarEditRecorder.get(name)?.type
+  return editType === 'change' || editType === 'descChange'
+}
+
+/** 是否是主题变量中初始具有的主题元 */
+export function isOriginThemeItem<T>(name: string, themeVar: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>) {
+  return themeVar.has(name) && themeVarEditRecorder.get(name)?.type !== 'add'
+}

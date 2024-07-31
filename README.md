@@ -310,13 +310,22 @@ import { ThemeProvider } from "@/utils/theme";
 `@/lib/Theme/index.ts`导出了便于使用主题的函数  
 * `checkThemeItemName`
   `(name: string)=>void|never`
-  是否是合法主题元名称
+  检查是否是合法主题元名称
 * `getEditedThemeVar`
   `(themeVar: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>ThemeVar<T>`
   取得应用变更后的主题变量
 * `getInfoFromExtendThemeItemName`
   `(name: string)=>null|{ themeItemName: string; level: number; opacity: number; }`
   从拓展主题名中获取信息
+* `isDeletedThemeItem`
+  `(name: string, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>boolean`
+  是否是被删除的主题元 
+* `isEditedThemeItem`
+  `(name: string, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>boolean`
+  是否是被编辑的主题元
+* `isOriginThemeItem`
+  `(name: string, themeVar: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>boolean`
+  是否是主题变量中初始具有的主题元
 * `isPropertyMap`
   `(value: PropertyMap | SubThemeMap)=> value is PropertyMap`
   `判断是否是属性映射`
