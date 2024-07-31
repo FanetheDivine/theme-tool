@@ -30,7 +30,7 @@ export function useCompWithMutation<T>(value: T, onChange: (newVal: T) => void, 
     onChange(newVal)
   }, [onChange])
   const equalFn = isEqual ?? Object.is.bind(Object)
-  if (!equalFn(prevValueRef.current, value) || !equalFn(value, changedValueRef.current)) {
+  if (!equalFn(prevValueRef.current, value) && !equalFn(value, changedValueRef.current)) {
     keyRef.current = Date.now().toString()
   }
   prevValueRef.current = value
