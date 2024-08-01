@@ -213,9 +213,9 @@ export function getInfoFromExtendThemeItemName(name: string) {
 }
 
 /** 是否是被删除的主题元 */
-export function isDeletedThemeItem<T>(name: string, themeVarEditRecorder: ThemeVarEditRecorder<T>) {
+export function isDeletedThemeItem<T>(name: string, theme: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>) {
   const editType = themeVarEditRecorder.get(name)?.type
-  return editType === 'delete'
+  return editType === 'delete' || (theme.has(name) && editType === 'add')
 }
 
 /** 是否是被编辑的主题元 */

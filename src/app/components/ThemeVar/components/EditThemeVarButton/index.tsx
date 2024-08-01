@@ -13,7 +13,7 @@ export const EditThemeVarButton = () => {
   const [open, setOpen] = useState(false)
   if (!themeInfo) return null
   const editedThemeVar = getEditedThemeVar(themeInfo.themeVar, themeInfo.themeVarEditRecorder)
-  const deletedItems = Array.from(themeInfo.themeVar.keys()).filter(name => isDeletedThemeItem(name, themeInfo.themeVarEditRecorder))
+  const deletedItems = Array.from(themeInfo.themeVar.keys()).filter(name => isDeletedThemeItem(name, themeInfo.themeVar, themeInfo.themeVarEditRecorder))
   return (
     <>
       <Button onClick={() => setOpen(true)} type='primary' icon={<EditOutlined></EditOutlined>}>编辑主题变量</Button>
