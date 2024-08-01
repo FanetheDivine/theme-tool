@@ -33,8 +33,8 @@ export function ThemeItemValueRender<T>(props: ThemeItemValueRenderProps<T>) {
     )
     return (
       <Popover trigger={'click'} content={content} placement='right'>
-        <div className='flex justify-around items-center cursor-pointer text-sm'>
-          <span>数组[...]</span>
+        <div className='flex items-center cursor-pointer text-sm'>
+          <span className='flex-auto text-center'>数组[...]</span>
           <RightOutlined></RightOutlined>
         </div>
       </Popover>
