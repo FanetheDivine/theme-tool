@@ -7,6 +7,7 @@ import { Button, Modal, Card, Form, Input, Select, Divider, Typography } from "a
 import { useForm, useWatch } from "antd/es/form/Form"
 import classNames from "classnames"
 import React, { FC, PropsWithChildren, ReactNode, useState } from "react"
+import { DeleteThemeItemIcon } from "../DeleteThemeItemIcon"
 
 /** 用于打开主题编辑弹窗 */
 export const EditThemeVarButton = () => {
@@ -24,19 +25,7 @@ export const EditThemeVarButton = () => {
             Array.from(editedThemeVar.entries()).map(([name]) => {
               return (
                 <ThemeVarCard key={name} name={name}>
-                  <DeleteOutlined title='删除' onClick={() => {
-                    const deleteVar = () => edit.themeVar.delete(name)
-                    if (isOriginThemeItem(name, themeInfo.themeVar, themeInfo.themeVarEditRecorder)) {
-                      deleteVar()
-                    } else {
-                      Modal.confirm({
-                        title: '确定删除？',
-                        content: '这个主题元不在初始的主题变量中,它的删除是不可逆的。',
-                        onOk: deleteVar
-                      })
-                    }
-                  }}
-                  />
+                  <DeleteThemeItemIcon name={name} />
                   {
                     isEditedThemeItem(name, themeInfo.themeVarEditRecorder)
                       ? <UndoOutlined title='撤销变更' onClick={() => edit.themeVar.undo(name)}></UndoOutlined>

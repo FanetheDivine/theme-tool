@@ -8,6 +8,7 @@ import { ThemeItemValueRender } from "@/app/components/ThemeVar/components/Theme
 import { getEditedThemeVar, isEditedThemeItem } from "@/lib/Theme";
 import { EditThemeVarButton } from "./components/EditThemeVarButton";
 import { UndoOutlined } from "@ant-design/icons";
+import { DeleteThemeItemIcon } from "./components/DeleteThemeItemIcon";
 
 type ThemeVarProps = {
   className?: string,
@@ -47,7 +48,9 @@ const ThemeItemName: FC<{ name: string }> = props => {
   const { themeInfo, edit } = useTheme()
   if (!themeInfo) return null
   return (
-    <Typography.Title className='flex gap-2 items-center' level={5}>{props.name}
+    <Typography.Title className='flex gap-2 items-center' level={5}>
+      {props.name}
+      <DeleteThemeItemIcon name={props.name} />
       {
         isEditedThemeItem(props.name, themeInfo.themeVarEditRecorder)
           ? <UndoOutlined title='撤销变更' className='text-sm' onClick={() => edit.themeVar.undo(props.name)}></UndoOutlined>
