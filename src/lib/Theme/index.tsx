@@ -218,7 +218,6 @@ export function isProperty<T>(value: Property<T> | SubTheme<T>): value is Proper
 
 /** 从属性映射的`value`获取具体值 */
 export function getValue<T>(themeVar: ThemeVar<T>, value: PropertyMapValue): PropertyValue<T> {
-  /** 取得非数组映射值应用主题后的结果 */
   if (Array.isArray(value)) {
     return value.map(v => getValue(themeVar, v))
   } else {
