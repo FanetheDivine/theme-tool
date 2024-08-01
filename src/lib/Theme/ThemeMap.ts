@@ -186,7 +186,7 @@ export function undoThemeMapChange(themeMapEditRecorder: ThemeMapEditRecorder, t
 export function getEditedThemeMap(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder): ThemeMap {
   const copy = (themeMap: ThemeMap) => {
     const newThemeMap: ThemeMap = new Map()
-    themeMap.entries().forEach(([key, value]) => {
+    Array.from(themeMap.entries()).forEach(([key, value]) => {
       if (isPropertyMap(value)) {
         newThemeMap.set(key, value)
       } else {
@@ -197,7 +197,7 @@ export function getEditedThemeMap(themeMap: ThemeMap, themeMapEditRecorder: Them
   }
   const editedThemeMap = copy(themeMap)
 
-  themeMapEditRecorder.entries().forEach(([themeMapEditRecorderKey, record]) => {
+  Array.from(themeMapEditRecorder.entries()).forEach(([themeMapEditRecorderKey, record]) => {
     const keys = themeMapEditRecorderKey.split('.')
     let currentThemeMap: ThemeMap = editedThemeMap
     for (let i = 0; i < keys.length; ++i) {

@@ -14,14 +14,14 @@ export const EditThemeVarButton = () => {
   const [open, setOpen] = useState(false)
   if (!themeInfo) return null
   const editedThemeVar = getEditedThemeVar(themeInfo.themeVar, themeInfo.themeVarEditRecorder)
-  const deletedItems = themeInfo.themeVar.keys().filter(name => isDeletedThemeItem(name, themeInfo.themeVarEditRecorder)).toArray()
+  const deletedItems = Array.from(themeInfo.themeVar.keys()).filter(name => isDeletedThemeItem(name, themeInfo.themeVarEditRecorder))
   return (
     <>
       <Button onClick={() => setOpen(true)} type='primary' icon={<EditOutlined></EditOutlined>}>编辑主题变量</Button>
       <Modal maskClosable={false} title={'编辑主题变量'} open={open} onCancel={() => setOpen(false)} footer={null}>
         <div className='flex flex-wrap'>
           {
-            editedThemeVar.entries().toArray().map(([name]) => {
+            Array.from(editedThemeVar.entries()).map(([name]) => {
               return (
                 <ThemeVarCard key={name} name={name}>
                   <DeleteOutlined title='删除' onClick={() => {

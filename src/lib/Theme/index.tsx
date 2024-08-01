@@ -27,7 +27,7 @@ function getInitValue<T>(initThemeInfo?: InitThemeInfo<T>): ThemeInfo<T> | undef
   if (!initThemeInfo) {
     return undefined
   }
-  initThemeInfo.themeVar.keys().forEach(checkThemeItemName)
+  Array.from(initThemeInfo.themeVar.keys()).forEach(checkThemeItemName)
   const initValue = {
     themeVar: initThemeInfo.themeVar,
     themeMap: initThemeInfo.themeMap,
@@ -234,7 +234,7 @@ export function getValue<T>(themeVar: ThemeVar<T>, value: PropertyMapValue): Pro
 /** 取得主题 */
 export function getTheme<T>(themeVar: ThemeVar<T>, themeMap: ThemeMap): Theme<T> {
   const theme: Theme<T> = new Map()
-  themeMap.entries().forEach(([key, value]) => {
+  Array.from(themeMap.entries()).forEach(([key, value]) => {
     if (isPropertyMap(value)) {
       theme.set(key, { desc: value.desc, value: getValue(themeVar, value.value) })
     } else {

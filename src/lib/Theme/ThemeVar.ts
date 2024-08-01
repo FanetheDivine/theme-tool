@@ -159,7 +159,7 @@ export function undoThemeVarChange<T>(themeVarEditRecorder: ThemeVarEditRecorder
 /** 取得应用变更后的主题变量 */
 export function getEditedThemeVar<T>(theme: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>): ThemeVar<T> {
   const editedTheme: ThemeVar<T> = new Map(theme.entries())
-  themeVarEditRecorder.entries().forEach(([name, record]) => {
+  Array.from(themeVarEditRecorder.entries()).forEach(([name, record]) => {
     switch (record.type) {
       case 'delete': {
         editedTheme.delete(name)
@@ -221,7 +221,7 @@ export function isDeletedThemeItem<T>(name: string, themeVarEditRecorder: ThemeV
 /** 是否是被编辑的主题元 */
 export function isEditedThemeItem<T>(name: string, themeVarEditRecorder: ThemeVarEditRecorder<T>) {
   const editType = themeVarEditRecorder.get(name)?.type
-  return editType === 'change' || editType === 'descChange' || editType==='valueChange'
+  return editType === 'change' || editType === 'descChange' || editType === 'valueChange'
 }
 
 /** 是否是主题变量中初始具有的主题元 */

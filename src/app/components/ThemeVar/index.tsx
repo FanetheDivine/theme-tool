@@ -22,7 +22,7 @@ export const ThemeVar: FC<ThemeVarProps> = props => {
     <div style={props.style} className={classNames(props.className, 'flex flex-col')}>
       <div className='flex-auto flex flex-col overflow-auto'>
         {
-          editedThemeVar.entries().toArray().map(([name, item]) => {
+          Array.from(editedThemeVar.entries()).map(([name, item]) => {
             return (
               <Fragment key={name}>
                 <div className='flex flex-col'>
