@@ -23,10 +23,10 @@ export const EditThemeVarButton = () => {
             Array.from(editedThemeVar.entries()).map(([name]) => {
               return (
                 <ThemeVarCard key={name} name={name}>
-                  <DeleteThemeItemIcon name={name} />
+                  <DeleteThemeItemIcon className='text-sm' name={name} />
                   {
                     isEditedThemeItem(name, themeInfo.themeVarEditRecorder)
-                      ? <UndoOutlined title='撤销变更' onClick={() => edit.themeVar.undo(name)}></UndoOutlined>
+                      ? <UndoOutlined className='text-sm' title='撤销变更' onClick={() => edit.themeVar.undo(name)}></UndoOutlined>
                       : null
                   }
                 </ThemeVarCard>
@@ -34,7 +34,7 @@ export const EditThemeVarButton = () => {
             })
           }
           <ThemeVarCard>
-            <AddThemeItemButton />
+            <AddThemeItemButton className='text-xl' />
           </ThemeVarCard>
         </div>
         {
@@ -59,7 +59,7 @@ export const EditThemeVarButton = () => {
             : null
         }
 
-      </Modal>
+      </Modal >
     </>
   )
 }
@@ -68,7 +68,7 @@ export const EditThemeVarButton = () => {
 const ThemeVarCard: FC<PropsWithChildren & { name?: ReactNode, className?: string, onClick?: () => void }> = props => {
   return (
     <Card size='small' className={classNames('my-2 mx-4', props.className)} onClick={props.onClick}>
-      <div className='flex gap-2 items-center'>
+      <div className='flex gap-2 items-end'>
         {
           props.name
             ? <span className='text-xl'>{props.name}</span>
