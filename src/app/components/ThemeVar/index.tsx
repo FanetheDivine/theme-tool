@@ -53,7 +53,7 @@ const ThemeItemName: FC<{ name: string }> = props => {
   const { themeInfo, edit } = useTheme()
   if (!themeInfo) return null
   return (
-    <Typography.Title className='flex gap-2 items-end' level={5}>
+    <Typography.Title className='flex gap-2 items-end my-0' level={5}>
       <span className='text-xl'>{props.name}</span>
       {
         !isOriginThemeItem(props.name, themeInfo.themeVar, themeInfo.themeVarEditRecorder)
