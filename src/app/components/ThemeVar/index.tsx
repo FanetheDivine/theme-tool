@@ -5,10 +5,11 @@ import { CSSProperties, FC, Fragment } from "react";
 import classNames from "classnames";
 import { Divider, Typography, } from "antd";
 import { ThemeItemValueRender } from "@/app/components/ThemeVar/components/ThemeItemValueRender";
-import { getEditedThemeVar, isEditedThemeItem } from "@/lib/Theme";
+import { getEditedThemeVar, isEditedThemeItem, isOriginThemeItem } from "@/lib/Theme";
 import { EditThemeVarButton } from "./components/EditThemeVarButton";
 import { UndoOutlined } from "@ant-design/icons";
 import { DeleteThemeItemIcon } from "./components/DeleteThemeItemIcon";
+import { AddThemeItemButton } from "./components/AddThemeItemIcon";
 
 type ThemeVarProps = {
   className?: string,
@@ -37,6 +38,9 @@ export const ThemeVar: FC<ThemeVarProps> = props => {
             )
           })
         }
+        <div className='flex justify-center'>
+          <AddThemeItemButton className='text-2xl' />
+        </div>
       </div>
       <EditThemeVarButton></EditThemeVarButton>
     </div>
