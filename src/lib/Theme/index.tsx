@@ -236,7 +236,7 @@ export function getValue<T>(themeVar: ThemeVar<T>, value: PropertyMapValue): Pro
       return themeItem.value
     }
     const colors = generate(themeItem.value)
-    return TinyColor2(colors[info.level]).setAlpha(info.opacity / 100).toHex()
+    return TinyColor2(colors[info.level ?? 5]).setAlpha((info.opacity ?? 100) / 100).toHex()
   }
 }
 

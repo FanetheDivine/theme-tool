@@ -200,8 +200,8 @@ export function getInfoFromExtendThemeItemName(name: string) {
     return null
   }
   const themeItemName = res[1]
-  const level = Number(res[4] ?? 5)
-  const opacity = Number(res[6] ?? 100)
+  const level = res[4] ? Number(res[4]) : null
+  const opacity = res[6] ? Number(res[6]) : null
   return {
     /** 合法主题元名称 */
     themeItemName,
