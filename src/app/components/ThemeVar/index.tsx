@@ -3,11 +3,11 @@
 import { useTheme } from "@/utils/theme";
 import { CSSProperties, FC, Fragment } from "react";
 import classNames from "classnames";
-import { Divider, Typography, } from "antd";
+import { Divider, Tooltip, Typography, } from "antd";
 import { ThemeItemValueRender } from "@/app/components/ThemeVar/components/ThemeItemValueRender";
 import { getEditedThemeVar, isEditedThemeItem, isOriginThemeItem } from "@/lib/Theme";
 import { EditThemeVarButton } from "./components/EditThemeVarButton";
-import { UndoOutlined } from "@ant-design/icons";
+import { InfoCircleOutlined, UndoOutlined } from "@ant-design/icons";
 import { DeleteThemeItemIcon } from "./components/DeleteThemeItemIcon";
 import { AddThemeItemButton } from "./components/AddThemeItemIcon";
 
@@ -52,9 +52,18 @@ const ThemeItemName: FC<{ name: string }> = props => {
   const { themeInfo, edit } = useTheme()
   if (!themeInfo) return null
   return (
-    <Typography.Title className='flex gap-2 items-center' level={5}>
-      {props.name}
-      <DeleteThemeItemIcon name={props.name} />
+    <Typography.Title className='flex gap-2 items-end' level={5}>
+      <span className='text-xl'>{props.name}</span>
+      {
+        !isOriginThemeItem(props.name, themeInfo.themeVar, themeInfo.themeVarEditRecorder)
+          ? (
+            <Tooltip title={'这个主题元不在初始的主题变量中'}>
+              <InfoCircleOutlined className='text-xs'></InfoCircleOutlined>
+            </Tooltip>
+          )
+          : null
+      }
+      <DeleteThemeItemIcon className='text-sm' name={props.name} />
       {
         isEditedThemeItem(props.name, themeInfo.themeVarEditRecorder)
           ? <UndoOutlined title='撤销变更' className='text-sm' onClick={() => edit.themeVar.undo(props.name)}></UndoOutlined>
