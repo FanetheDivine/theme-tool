@@ -235,8 +235,7 @@ export function getValue<T>(themeVar: ThemeVar<T>, value: PropertyMapValue): Pro
     if (typeof themeItem.value !== 'string' || !TinyColor2(themeItem.value).isValid()) {
       return themeItem.value
     }
-    const colors = generate(themeItem.value)
-    return TinyColor2(colors[info.level ?? 5]).setAlpha((info.opacity ?? 100) / 100).toHex()
+    return getColor(themeItem.value, info.level, info.opacity)
   }
 }
 
@@ -251,4 +250,10 @@ export function getTheme<T>(themeVar: ThemeVar<T>, themeMap: ThemeMap): Theme<T>
     }
   })
   return theme
+}
+
+/** 获取一个颜色指定色阶和透明度的版本 */
+export function getColor(color: string, level: number | null, opacity: number | null) {
+  const colors = generate(color)
+  return TinyColor2(colors[level ?? 5]).setAlpha((opacity ?? 5) / 100).toHex()
 }
