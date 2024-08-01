@@ -110,9 +110,13 @@ const ThemeMapName: FC<{ name: string, themeMapkey: string }> = props => {
 
 /** 展示映射描述 */
 const ThemeMapDesc: FC<{ desc: string, themeMapkey: string }> = props => {
-  // 简介需要可以变更
+  const { themeInfo, edit } = useTheme()
+  if (!themeInfo) return null
   return (
-    <Typography.Text editable={{}}>
+    <Typography.Text editable={{
+      triggerType:['icon'],
+      onChange:newVal=>edit.themeMap.changeDesc(props.themeMapkey,newVal)
+    }}>
       {props.desc}
     </Typography.Text>
   )
