@@ -23,7 +23,7 @@ export function ThemeItemValueRender<T>(props: ThemeItemValueRenderProps<T>) {
           value.map((v, index) => {
             return (
               <Fragment key={index}>
-                <ThemeItemValueRender value={v} onChange={newVal => props.onChange(value.map((v, i) => i !== index ? v : newVal))}></ThemeItemValueRender>
+                <ThemeItemValueRender value={v} onChange={newVal => props.onChange(value.with(index, newVal))}></ThemeItemValueRender>
                 <Divider className='my-1'></Divider>
               </Fragment>
             )

@@ -83,7 +83,7 @@ const PropertyMapValueRender: FC<PropertyMapValueRenderProps> = props => {
           value.map((v, index) => {
             return (
               <Fragment key={index}>
-                <PropertyMapValueRender value={v} onChange={newVal => onChange(value.map((v, i) => i !== index ? v : newVal))}></PropertyMapValueRender>
+                <PropertyMapValueRender value={v} onChange={newVal => onChange(value.with(index, newVal))}></PropertyMapValueRender>
                 <Divider className='my-1'></Divider>
               </Fragment>
             )
