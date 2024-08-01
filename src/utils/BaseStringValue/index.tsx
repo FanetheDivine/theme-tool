@@ -58,9 +58,7 @@ const BaseStringValueInner: FC<BaseStringValueInnerProps> = props => {
     />
   )
 
-  const isColor = useCreation(() => {
-    return !props.pureString && tinycolor(props.defaultValue).isValid()
-  }, [])
+  const isColor = !props.pureString && tinycolor(color).isValid()
 
   return (
     <Input style={props.style} className={props.className}
@@ -69,7 +67,7 @@ const BaseStringValueInner: FC<BaseStringValueInnerProps> = props => {
         const newText = e.target.value
         props.onChange?.(newText)
         setText(newText)
-        if (isColor && tinycolor(newText).isValid()) {
+        if (tinycolor(newText).isValid()) {
           setColor(newText)
         }
       }}
