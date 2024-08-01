@@ -158,8 +158,9 @@ Map
 /** 变更类型 */
 type ThemeMapEdit = { type: 'add', value: SubThemeMap | PropertyMap }
   | { type: 'delete' }
-  | { type: 'change', value: PropertyMapValue }
+  | { type: 'valueChange', value: PropertyMapValue }
   | { type: 'descChange', desc: string }
+  | { type: 'change', value: { value: PropertyMapValue, desc: string } }
 
 /** 映射变更 */
 type ThemeMapEditRecorder = Map<string, ThemeMapEdit>
@@ -169,9 +170,9 @@ type ThemeMapEditRecorder = Map<string, ThemeMapEdit>
 * 对变更的解释
   假设存在变更`key => { type, value(或desc) }`
   - 若type为'delete',key的目标被视作删除
-  - 若type为'change'且key的目标是属性映射,这个属性映射的的值被value替换
+  - 若type为'valueChange'且key的目标是属性映射,这个属性映射的的值被value替换
   - 若type为'descChange'且key的目标在映射中,这个属性映射的的desc被desc替换
-  - 若type为'add'且key的目标在映射中,视为key的目标被value完全替换
+  - 若type为'change'且key的目标在映射中,视为key的目标被value替换
   - 若type为'add',key去除最后一部分索引后指示的目标是由下级结构的子映射,则在此子映射下以value创建新映射.(例如'example.Title1'会创建新映射,而'example1.Title1',''version'.'example'则不会,'example'指示的目标是子映射而非属性映射)
 ##### 映射变更示例
 变更
@@ -309,41 +310,53 @@ import { ThemeProvider } from "@/utils/theme";
 ```
 #### 实用函数
 `@/lib/Theme/index.ts`导出了便于使用主题的函数  
-* `checkThemeItemName`
-  `(name: string)=>void|never`
+##### 主题变量相关  
+* `checkThemeItemName`  
+  `(name: string)=>void|never`  
   检查是否是合法主题元名称
-* `getEditedThemeVar`
-  `(themeVar: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>ThemeVar<T>`
+* `getEditedThemeVar`  
+  `(themeVar: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>ThemeVar<T>`  
   取得应用变更后的主题变量
-* `getInfoFromExtendThemeItemName`
-  `(name: string)=>null|{ themeItemName: string; level: number; opacity: number; }`
+* `getInfoFromExtendThemeItemName`  
+  `(name: string)=>null|{ themeItemName: string; level: number; opacity: number; }`  
   从拓展主题名中获取信息
-* `isDeletedThemeItem`
-  `(name: string, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>boolean`
+* `isDeletedThemeItem`  
+  `(name: string, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>boolean`  
   是否是被删除的主题元 
-* `isEditedThemeItem`
-  `(name: string, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>boolean`
+* `isEditedThemeItem`  
+  `(name: string, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>boolean`  
   是否是被编辑的主题元
-* `isOriginThemeItem`
-  `(name: string, themeVar: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>boolean`
-  是否是主题变量中初始具有的主题元
-* `isPropertyMap`
-  `(value: PropertyMap | SubThemeMap)=> value is PropertyMap`
-  `判断是否是属性映射`
+* `isOriginThemeItem`  
+  `(name: string, themeVar: ThemeVar<T>, themeVarEditRecorder: ThemeVarEditRecorder<T>)=>boolean`  
+  是否是主题变量中初始具有的主题元  
+##### 映射相关  
+* `isPropertyMap`   
+  `(value: PropertyMap | SubThemeMap)=> value is PropertyMap`  
+  判断是否是属性映射
 * `getEditedThemeMap`  
   `(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder): ThemeMap`  
   取得应用变更后的映射
-* `isProperty`
-  `(value: Property<T> | SubTheme<T>): value is Property<T>`
+* `isProperty`  
+  `(value: Property<T> | SubTheme<T>): value is Property<T>`  
   判断主题的映射结果是否是属性值
-* `getValue`
-  `(themeVar: ThemeVar<T>, value: PropertyMapValue)=> PropertyValue<T>`
+* `isDeletedThemeMap`  
+  `(themeMapKey: string, themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder)=>boolean`  
+  是否是被删除的映射 
+* `isEditedThemeMap`  
+  `(themeMapKey: string, themeMapEditRecorder: ThemeMapEditRecorder)=>boolean`  
+  是否是被编辑的主题映射
+* `isOriginThemeMap`  
+  `(themeMapKey: string, themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder)=>boolean`  
+  是否来自初始的主题映射
+##### 主题相关
+* `getValue`  
+  `(themeVar: ThemeVar<T>, value: PropertyMapValue)=> PropertyValue<T>`  
   从属性映射的`value`获取具体值
-* `getThemeVars`
-  `(themeVar: ThemeVar<T>, themeMap: ThemeMap)=>ThemeVars<T>`
+* `getThemeVars`  
+  `(themeVar: ThemeVar<T>, themeMap: ThemeMap)=>ThemeVars<T>`  
   取得主题变量
-* `getColor`
-  `getColor(color: string, level: number | null, opacity: number | null)=>string`
+* `getColor`  
+  `getColor(color: string, level: number | null, opacity: number | null)=>string`  
   获取一个颜色指定色阶和透明度的版本
 ## 主题体系的展示和修改
 主题、映射需要按照层级结构分别展示,可以进行变更、体现变更.

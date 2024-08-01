@@ -1,13 +1,13 @@
 import { createContext, createElement, FC, PropsWithChildren, useCallback, useContext, useMemo, useState, useTransition } from 'react';
 import { type ThemeItem, type ThemeVar, type ThemeVarEditRecorder, addThemeItem, deleteThemeItem, changeThemeItemValue, getInfoFromExtendThemeItemName, ThemeItemValue, checkThemeItemName, changeThemeItemDesc, undoThemeVarChange } from './ThemeVar'
-import { addThemeMap, addThemeMapPropertyMap, changeThemeMap, changeThemeMapDesc, deleteThemeMap, isPropertyMap, PropertyMapValue, SubThemeMap, ThemeMapItemBaseType, undoThemeMapChange, type PropertyMap, type ThemeMap, type ThemeMapEditRecorder } from './ThemeMap'
+import { addThemeMap, addThemeMapPropertyMap, changeThemeMapValue, changeThemeMapDesc, deleteThemeMap, isPropertyMap, PropertyMapValue, SubThemeMap, ThemeMapItemBaseType, undoThemeMapChange, type PropertyMap, type ThemeMap, type ThemeMapEditRecorder } from './ThemeMap'
 import { generate } from '@ant-design/colors';
 import TinyColor2 from 'tinycolor2'
 
 export type { ThemeItemBaseValue, ThemeItemValue, ThemeItem, ThemeVar, ThemeVarEdit, ThemeVarEditRecorder } from './ThemeVar'
 export type { PropertyMapBaseValue, PropertyMapValue, ThemeMapItemBaseType, PropertyMap, SubThemeMap, ThemeMap, ThemeMapEdit, ThemeMapEditRecorder } from './ThemeMap'
 export { getEditedThemeVar, checkThemeItemName, getInfoFromExtendThemeItemName, isDeletedThemeItem, isEditedThemeItem, isOriginThemeItem } from './ThemeVar'
-export { getEditedThemeMap, isPropertyMap } from './ThemeMap'
+export { getEditedThemeMap, isPropertyMap, isDeletedThemeMap, isEditedThemeMap, isOriginThemeMap } from './ThemeMap'
 
 /** 主题信息 */
 export type ThemeInfo<T> = {
@@ -134,9 +134,9 @@ export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
           })
         },
         /** 修改key指示的属性映射的值 */
-        change: (themeMapEditRecorderKey: string, value: PropertyMapValue) => {
+        changeValue: (themeMapEditRecorderKey: string, value: PropertyMapValue) => {
           setThemeMapEditRecorder(themeInfo => {
-            return changeThemeMap(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, value)
+            return changeThemeMapValue(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, value)
           })
         },
         /** 修改key指示的子映射的描述 */

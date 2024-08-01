@@ -36,8 +36,9 @@ export type ThemeMap = Map<string, PropertyMap | SubThemeMap>
 /** 变更类型 */
 export type ThemeMapEdit = { type: 'add', value: SubThemeMap | PropertyMap }
   | { type: 'delete' }
-  | { type: 'change', value: PropertyMapValue }
+  | { type: 'valueChange', value: PropertyMapValue }
   | { type: 'descChange', desc: string }
+  | { type: 'change', value: { value: PropertyMapValue, desc: string } }
 
 /** 映射变更 */
 export type ThemeMapEditRecorder = Map<string, ThemeMapEdit>
@@ -52,8 +53,8 @@ export function isPropertyMap(value: SubThemeMap | PropertyMap): value is Proper
 }
 
 /** 判断`key`所指示的子映射是否被映射包含 */
-export function themeMapHas(themeMap: ThemeMap, themeMapEditRecorderKey: string): Boolean {
-  const keys = themeMapEditRecorderKey.split('.')
+export function themeMapHas(themeMap: ThemeMap, themeMapKey: string): Boolean {
+  const keys = themeMapKey.split('.')
   let currentThemeMap: ThemeMap = themeMap
   for (let i = 0; i < keys.length; ++i) {
     const key = keys[i]
@@ -82,44 +83,44 @@ function copyThemeMapEditRecorder(themeMapEditRecorder: ThemeMapEditRecorder): T
 }
 
 /** 创建或替换key指示的具有下级结构的子映射.创建一个新变更反映此次变更.  */
-export function addThemeMap(themeMapEditRecorder: ThemeMapEditRecorder, themeMapEditRecorderKey: string, desc: string) {
+export function addThemeMap(themeMapEditRecorder: ThemeMapEditRecorder, themeMapKey: string, desc: string) {
   const newThemeMapEditRecorder = copyThemeMapEditRecorder(themeMapEditRecorder)
-  newThemeMapEditRecorder.set(themeMapEditRecorderKey, { type: 'add', value: { desc, children: new Map() as ThemeMap } })
+  newThemeMapEditRecorder.set(themeMapKey, { type: 'add', value: { desc, children: new Map() as ThemeMap } })
   return newThemeMapEditRecorder
 }
 
 /** 创建或替换key指示的属性映射.创建一个新变更反映此次变更.  */
-export function addThemeMapPropertyMap(themeMapEditRecorder: ThemeMapEditRecorder, themeMapEditRecorderKey: string, value: PropertyMap) {
+export function addThemeMapPropertyMap(themeMapEditRecorder: ThemeMapEditRecorder, themeMapKey: string, value: PropertyMap) {
   const newThemeMapEditRecorder = copyThemeMapEditRecorder(themeMapEditRecorder)
-  newThemeMapEditRecorder.set(themeMapEditRecorderKey, { type: 'add', value })
+  newThemeMapEditRecorder.set(themeMapKey, { type: 'add', value })
   return newThemeMapEditRecorder
 }
 
 /** 删除key指示的子映射.创建一个新变更反映此次变更. */
-export function deleteThemeMap(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder, themeMapEditRecorderKey: string) {
+export function deleteThemeMap(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder, themeMapKey: string) {
   const newThemeMapEditRecorder = copyThemeMapEditRecorder(themeMapEditRecorder)
-  if (themeMapHas(themeMap, themeMapEditRecorderKey)) {
-    newThemeMapEditRecorder.set(themeMapEditRecorderKey, { type: 'delete' })
+  if (themeMapHas(themeMap, themeMapKey)) {
+    newThemeMapEditRecorder.set(themeMapKey, { type: 'delete' })
   } else {
-    newThemeMapEditRecorder.delete(themeMapEditRecorderKey)
+    newThemeMapEditRecorder.delete(themeMapKey)
   }
   return newThemeMapEditRecorder
 }
 
 /** 修改key指示的属性映射.创建一个新变更反映此次变更. */
-export function changeThemeMap(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder, themeMapEditRecorderKey: string, value: PropertyMapValue) {
+export function changeThemeMapValue(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder, themeMapKey: string, value: PropertyMapValue) {
   const newThemeMapEditRecorder = copyThemeMapEditRecorder(themeMapEditRecorder)
-  const record = newThemeMapEditRecorder.get(themeMapEditRecorderKey)
+  const record = newThemeMapEditRecorder.get(themeMapKey)
   if (record) {
     switch (record.type) {
       case 'delete':
-      case 'change': {
-        newThemeMapEditRecorder.set(themeMapEditRecorderKey, { type: 'change', value })
+      case 'valueChange': {
+        newThemeMapEditRecorder.set(themeMapKey, { type: 'valueChange', value })
         break
       }
       case 'add': {
         if (isPropertyMap(record.value)) {
-          newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
+          newThemeMapEditRecorder.set(themeMapKey, {
             type: 'add',
             value: { desc: record.value.desc, value }
           })
@@ -127,58 +128,72 @@ export function changeThemeMap(themeMap: ThemeMap, themeMapEditRecorder: ThemeMa
         break
       }
       case 'descChange': {
-        newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
-          type: 'add',
+        newThemeMapEditRecorder.set(themeMapKey, {
+          type: 'change',
           value: { desc: record.desc, value }
         })
         break
       }
+      case 'change': {
+        newThemeMapEditRecorder.set(themeMapKey, {
+          type: 'change',
+          value: { desc: record.value.desc, value }
+        })
+        break
+      }
     }
-  } else if (themeMapHas(themeMap, themeMapEditRecorderKey)) {
-    newThemeMapEditRecorder.set(themeMapEditRecorderKey, { type: 'change', value })
+  } else if (themeMapHas(themeMap, themeMapKey)) {
+    newThemeMapEditRecorder.set(themeMapKey, { type: 'valueChange', value })
   }
   return newThemeMapEditRecorder
 }
 
 /** 修改key指示的子映射的描述.创建一个新变更反映此次变更. */
-export function changeThemeMapDesc(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder, themeMapEditRecorderKey: string, desc: string) {
+export function changeThemeMapDesc(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder, themeMapKey: string, desc: string) {
   const newThemeMapEditRecorder = copyThemeMapEditRecorder(themeMapEditRecorder)
-  const record = newThemeMapEditRecorder.get(themeMapEditRecorderKey)
+  const record = newThemeMapEditRecorder.get(themeMapKey)
   if (record) {
     switch (record.type) {
       case 'delete':
       case 'descChange': {
-        newThemeMapEditRecorder.set(themeMapEditRecorderKey, { type: 'descChange', desc })
+        newThemeMapEditRecorder.set(themeMapKey, { type: 'descChange', desc })
         break
       }
       case 'add': {
-        newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
+        newThemeMapEditRecorder.set(themeMapKey, {
           type: 'add',
           value: { ...record.value, desc }
         })
         break
       }
-      case 'change': {
-        newThemeMapEditRecorder.set(themeMapEditRecorderKey, {
-          type: 'add',
+      case 'valueChange': {
+        newThemeMapEditRecorder.set(themeMapKey, {
+          type: 'change',
           value: { value: record.value, desc }
         })
         break
       }
+      case 'change': {
+        newThemeMapEditRecorder.set(themeMapKey, {
+          type: 'change',
+          value: { value: record.value.value, desc }
+        })
+        break
+      }
     }
-  } else if (themeMapHas(themeMap, themeMapEditRecorderKey)) {
-    newThemeMapEditRecorder.set(themeMapEditRecorderKey, { type: 'descChange', desc })
+  } else if (themeMapHas(themeMap, themeMapKey)) {
+    newThemeMapEditRecorder.set(themeMapKey, { type: 'descChange', desc })
   }
   return newThemeMapEditRecorder
 }
 
 /** 撤销key指示的子映射的变更.创建一个新变更反映此次变更. */
-export function undoThemeMapChange(themeMapEditRecorder: ThemeMapEditRecorder, themeMapEditRecorderKey?: string) {
-  if (themeMapEditRecorderKey === undefined) {
+export function undoThemeMapChange(themeMapEditRecorder: ThemeMapEditRecorder, themeMapKey?: string) {
+  if (themeMapKey === undefined) {
     return new Map() as ThemeMapEditRecorder
   }
   const newThemeMapEditRecorder = copyThemeMapEditRecorder(themeMapEditRecorder)
-  newThemeMapEditRecorder.delete(themeMapEditRecorderKey)
+  newThemeMapEditRecorder.delete(themeMapKey)
   return newThemeMapEditRecorder
 }
 
@@ -197,8 +212,8 @@ export function getEditedThemeMap(themeMap: ThemeMap, themeMapEditRecorder: Them
   }
   const editedThemeMap = copy(themeMap)
 
-  Array.from(themeMapEditRecorder.entries()).forEach(([themeMapEditRecorderKey, record]) => {
-    const keys = themeMapEditRecorderKey.split('.')
+  Array.from(themeMapEditRecorder.entries()).forEach(([themeMapKey, record]) => {
+    const keys = themeMapKey.split('.')
     let currentThemeMap: ThemeMap = editedThemeMap
     for (let i = 0; i < keys.length; ++i) {
       const key = keys[i]
@@ -208,11 +223,12 @@ export function getEditedThemeMap(themeMap: ThemeMap, themeMapEditRecorder: Them
             currentThemeMap.delete(key)
             break
           }
+          case 'change':
           case 'add': {
             currentThemeMap.set(key, record.value)
             break
           }
-          case 'change': {
+          case 'valueChange': {
             const curValue = currentThemeMap.get(key)
             if (curValue) {
               currentThemeMap.set(key, { desc: curValue.desc, value: record.value })
@@ -241,4 +257,22 @@ export function getEditedThemeMap(themeMap: ThemeMap, themeMapEditRecorder: Them
   })
 
   return editedThemeMap
+}
+
+/** 是否是被删除的映射 */
+export function isDeletedThemeMap(themeMapKey: string, themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder) {
+  const editType = themeMapEditRecorder.get(themeMapKey)?.type
+  return editType === 'delete' || (themeMapHas(themeMap, themeMapKey) && editType === 'add')
+}
+
+/** 是否是被编辑的映射 */
+export function isEditedThemeMap(themeMapKey: string, themeMapEditRecorder: ThemeMapEditRecorder) {
+  const editType = themeMapEditRecorder.get(themeMapKey)?.type
+  return editType === 'change' || editType === 'descChange' || editType === 'valueChange'
+}
+
+/** 是否来自初始的主题映射 */
+export function isOriginThemeMap(themeMapKey: string, themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder) {
+  const editType = themeMapEditRecorder.get(themeMapKey)?.type
+  return themeMapHas(themeMap, themeMapKey) && editType !== 'add'
 }
