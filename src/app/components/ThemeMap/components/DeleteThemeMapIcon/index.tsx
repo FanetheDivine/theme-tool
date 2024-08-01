@@ -6,7 +6,7 @@ type DeleteThemeMapIconProps = {
     className?:string
 }
 
-export const AddThemeMapIcon:FC<DeleteThemeMapIconProps> = props=>{
+export const DeleteThemeMapIcon:FC<DeleteThemeMapIconProps> = props=>{
     throw new Error('删除映射按钮尚未完成')
     return <DeleteOutlined className={props.className} title='删除'></DeleteOutlined>
 }
