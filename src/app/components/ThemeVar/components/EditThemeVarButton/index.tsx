@@ -93,10 +93,12 @@ const ThemeVarCard: FC<PropsWithChildren & { name: ReactNode, className?: string
 
 /** 增加一个主题元 */
 const AddThemeVarCard: FC = () => {
-  const [form] = useForm()
+  type FormValue = { name: string, desc: string } & ({ type: 'color', colorValue: string } | { type: 'string', stringValue: string } | { type: 'number', numberValue: number })
+  const [form] = useForm<FormValue>()
   const { themeInfo, edit } = useTheme()
   const [open, setOpen] = useState(false)
-  const type = useWatch('type', form) ?? 'color'
+  const formType = useWatch('type', form)
+  const type = formType ?? 'color'
   if (!themeInfo) return
 
   const editedThemeVar = getEditedThemeVar(themeInfo.themeVar, themeInfo.themeVarEditRecorder)
@@ -114,9 +116,15 @@ const AddThemeVarCard: FC = () => {
     { value: 'number', label: '数字' }
   ]
 
-  const submit = (value: any) => {
-    const formValue = value as { name: string, desc: string } & ({ type: 'string' | 'color', value: string } | { type: 'number', value: number })
-    edit.themeVar.add(`@${formValue.name}`, { desc: formValue.desc, value: formValue.value })
+  const submit = (formValue: FormValue) => {
+    const value = (() => {
+      switch (formValue.type) {
+        case 'color': return formValue.colorValue
+        case "string": return formValue.stringValue
+        case "number": return formValue.numberValue
+      }
+    })()
+    edit.themeVar.add(`@${formValue.name}`, { desc: formValue.desc, value })
     setOpen(false)
   }
 
@@ -126,8 +134,8 @@ const AddThemeVarCard: FC = () => {
         <PlusOutlined></PlusOutlined>
       </ThemeVarCard>
       <Modal classNames={{ wrapper: '-top-16' }} maskClosable={false} title='添加主题元' footer={null} open={open} destroyOnClose onCancel={() => setOpen(false)}>
-        <Form onFinish={submit} preserve={false} form={form} layout='vertical'>
-          <Form.Item name={'name'} label='名称' validateFirst
+        <Form<FormValue> onFinish={submit} preserve={false} form={form} layout='vertical'>
+          <Form.Item<FormValue> name={'name'} label='名称' validateFirst
             rules={[
               { required: true, message: '请填写名称' },
               { validator: (_, v) => nameValidator(v) }
@@ -135,10 +143,10 @@ const AddThemeVarCard: FC = () => {
           >
             <Input prefix={'@'}></Input>
           </Form.Item>
-          <Form.Item name={'desc'} label='描述' rules={[{ required: true, message: '请填写描述' }]}>
+          <Form.Item<FormValue> name={'desc'} label='描述' rules={[{ required: true, message: '请填写描述' }]}>
             <Input></Input>
           </Form.Item>
-          <Form.Item name='type' label='类型' initialValue={'color'}>
+          <Form.Item<FormValue> name='type' label='类型' initialValue={'color'}>
             <Select options={options}></Select>
           </Form.Item>
           {
@@ -146,21 +154,21 @@ const AddThemeVarCard: FC = () => {
               switch (type) {
                 case 'color': {
                   return (
-                    <Form.Item name='value' label='初始值' initialValue={'#4096fa'}>
+                    <Form.Item<FormValue> name='colorValue' label='初始值' initialValue={'#4096fa'}>
                       <BaseStringValue value={''} onChange={() => { }}></BaseStringValue>
                     </Form.Item>
                   )
                 }
                 case 'string': {
                   return (
-                    <Form.Item name='value' label='初始值' initialValue={''}>
+                    <Form.Item<FormValue> name='stringValue' label='初始值' initialValue={''}>
                       <BaseStringValue value={''} onChange={() => { }}></BaseStringValue>
                     </Form.Item>
                   )
                 }
                 case 'number': {
                   return (
-                    <Form.Item name='value' label='初始值' initialValue={0}>
+                    <Form.Item<FormValue> name='numberValue' label='初始值' initialValue={0}>
                       <NumberValue value={0} onChange={() => { }}></NumberValue>
                     </Form.Item>
                   )
