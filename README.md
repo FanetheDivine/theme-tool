@@ -333,6 +333,9 @@ import { ThemeProvider } from "@/utils/theme";
 * `getEditedThemeMap`  
   `(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder): ThemeMap`  
   取得应用变更后的映射
+* `isProperty`
+  `(value: Property<T> | SubTheme<T>): value is Property<T>`
+  判断主题的映射结果是否是属性值
 * `getValue`
   `(themeVar: ThemeVar<T>, value: PropertyMapValue)=> PropertyValue<T>`
   从属性映射的`value`获取具体值

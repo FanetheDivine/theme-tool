@@ -211,6 +211,10 @@ export type Theme<T> = Map<string, Property<T> | SubTheme<T>>
 /********************  主题系列类型结束    ********************/
 
 
+/** 判断主题的映射结果是否是属性值 */
+export function isProperty<T>(value: Property<T> | SubTheme<T>): value is Property<T> {
+  return 'value' in value
+}
 
 /** 从属性映射的`value`获取具体值 */
 export function getValue<T>(themeVar: ThemeVar<T>, value: PropertyMapValue): PropertyValue<T> {
