@@ -6,6 +6,7 @@ import classNames from "classnames"
 import React, { FC, PropsWithChildren, ReactNode, useState } from "react"
 import { DeleteThemeItemIcon } from "../DeleteThemeItemIcon"
 import { AddThemeItemButton } from "../AddThemeItemIcon"
+import { UndoThemeItemIcon } from "../UndoThemeItemIcon"
 
 /** 用于打开主题编辑弹窗 */
 export const EditThemeVarButton = () => {
@@ -26,7 +27,7 @@ export const EditThemeVarButton = () => {
                   <DeleteThemeItemIcon className='text-sm' name={name} />
                   {
                     isEditedThemeItem(name, themeInfo.themeVarEditRecorder)
-                      ? <UndoOutlined className='text-sm' title='撤销变更' onClick={() => edit.themeVar.undo(name)}></UndoOutlined>
+                      ? <UndoThemeItemIcon name={name}></UndoThemeItemIcon>
                       : null
                   }
                 </ThemeVarCard>
@@ -48,7 +49,7 @@ export const EditThemeVarButton = () => {
                     deletedItems.map((name) => {
                       return (
                         <ThemeVarCard key={name} name={name}>
-                          <UndoOutlined title={'撤销删除'} onClick={() => edit.themeVar.undo(name)}></UndoOutlined>
+                          <UndoThemeItemIcon name={name}></UndoThemeItemIcon>
                         </ThemeVarCard>
                       )
                     })

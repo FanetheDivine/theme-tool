@@ -10,6 +10,7 @@ import { EditThemeVarButton } from "./components/EditThemeVarButton";
 import { InfoCircleOutlined, UndoOutlined } from "@ant-design/icons";
 import { DeleteThemeItemIcon } from "./components/DeleteThemeItemIcon";
 import { AddThemeItemButton } from "./components/AddThemeItemIcon";
+import { UndoThemeItemIcon } from "./components/UndoThemeItemIcon";
 
 type ThemeVarProps = {
   className?: string,
@@ -66,7 +67,7 @@ const ThemeItemName: FC<{ name: string }> = props => {
       <DeleteThemeItemIcon className='text-sm' name={props.name} />
       {
         isEditedThemeItem(props.name, themeInfo.themeVarEditRecorder)
-          ? <UndoOutlined title='撤销变更' className='text-sm' onClick={() => edit.themeVar.undo(props.name)}></UndoOutlined>
+          ? <UndoThemeItemIcon name={props.name}></UndoThemeItemIcon>
           : null
       }
     </Typography.Title>
