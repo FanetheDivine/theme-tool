@@ -8,12 +8,12 @@ export const { ThemeProvider, useTheme } = createTheme({
     ['@b', { desc: '主题元@b', value: '#FFFFFF' }]
   ]),
   themeMap: new Map([
-    ['example', { desc: 'example', value: ['t', ['@a', '@b']] }],
+    ['example', { desc: '示例', value: ['t', ['@a', '@b-G9-A90']] }],
     [
-      'children',
+      'example1',
       {
-        desc: 'children',
-        children: new Map([['sub', { desc: 'sub', value: '@b' }]])
+        desc: '具有子结构的映射',
+        children: new Map([['sub', { desc: 'sub', value: 1 }]])
       }
     ]
   ])
