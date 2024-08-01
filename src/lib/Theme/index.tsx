@@ -1,4 +1,4 @@
-import { createContext, createElement, FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, createElement, FC, PropsWithChildren, useCallback, useContext, useMemo, useState, useTransition } from 'react';
 import { type ThemeItem, type ThemeVar, type ThemeVarEditRecorder, addThemeItem, deleteThemeItem, changeThemeItemValue, getInfoFromExtendThemeItemName, ThemeItemValue, checkThemeItemName, changeThemeItemDesc, undoThemeVarChange } from './ThemeVar'
 import { addThemeMap, addThemeMapPropertyMap, changeThemeMap, changeThemeMapDesc, deleteThemeMap, isPropertyMap, PropertyMapValue, SubThemeMap, ThemeMapItemBaseType, undoThemeMapChange, type PropertyMap, type ThemeMap, type ThemeMapEditRecorder } from './ThemeMap'
 import { generate } from '@ant-design/colors';
@@ -44,7 +44,13 @@ export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
 
   const ThemeProvider: FC<PropsWithChildren> = props => {
     const [themeInfo, setThemeInfo] = useState<ThemeInfo<T> | undefined>(() => getInitValue(initThemeInfo))
-    return createElement(ThemeContext.Provider, { value: [themeInfo, setThemeInfo] }, props.children)
+    const [, startTransition] = useTransition()
+    const setThemeInfoWithTransition: typeof setThemeInfo = useCallback(arg => {
+      startTransition(() => {
+        setThemeInfo(arg)
+      })
+    }, [startTransition, setThemeInfo])
+    return createElement(ThemeContext.Provider, { value: [themeInfo, setThemeInfoWithTransition] }, props.children)
   }
 
   function useTheme() {
