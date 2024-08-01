@@ -364,6 +364,9 @@ import { ThemeProvider } from "@/utils/theme";
 ```
 此组件可以按照字符串是否是颜色选择不同的展示方式;支持防抖方式调用,表现上是非受控组件,但可以在value突变时受控.  
 可以设置参数pureString为true 将value完全识别为字符串
+### 展示主题体系
+在组件`@/app/components/ThemeContent`中展示整个主题体系,包括主题变量,映射,它们的变更以及生成的主题.它们被序列化后展示在屏幕上.通过`@/utils/themeCommonFn`提供的一些函数将它们转化为可序列化的对象.  
+![img](./source/images/themeContent/content.png)
 ### 展示和变更主题变量
 主题变量使用组件`@/app/ThemeVar`进行展示  
 #### 主题变量的展示
@@ -385,5 +388,4 @@ import { ThemeProvider } from "@/utils/theme";
 ![img](./source/images/themeVar/add.png)  
 ![img](./source/images/themeVar/select.png)  
 ### 展示和变更主题映射
-### 展示主题
 ## 主题的导出和导入

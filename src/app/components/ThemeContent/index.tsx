@@ -1,8 +1,10 @@
 'use client'
 
-import { getEditedThemeMap, getEditedThemeVar, getTheme } from "@/lib/Theme"
+import { getEditedThemeMap, getEditedThemeVar, getTheme, PropertyMap, ThemeMap, ThemeMapEditRecorder, ThemeMapItemBaseType } from "@/lib/Theme"
 import { useTheme } from "@/utils/theme"
+import { themeMapEditRecorderToObj, themeMapToObj, themeToObj, themeVarEditRecorderToObj, themeVarToObj } from "@/utils/themeCommonFn"
 import { Collapse, Typography } from "antd"
+import classNames from "classnames"
 import { CSSProperties, FC } from "react"
 
 type ThemeContentProps = {
@@ -22,12 +24,12 @@ export const ThemeContent: FC<ThemeContentProps> = props => {
       key: '1',
       children: (
         <Typography>
-          <Typography.Title>主题变量</Typography.Title>
-          <Typography.Text>主题变量</Typography.Text>
-          <Typography.Title>变更</Typography.Title>
-          <Typography.Text>主题变量</Typography.Text>
-          <Typography.Title>应用变更的主题变量</Typography.Title>
-          <Typography.Text>主题变量</Typography.Text>
+          <Typography.Title level={5}>主题变量</Typography.Title>
+          <FormatterObj value={themeVarToObj(themeInfo.themeVar)}></FormatterObj>
+          <Typography.Title level={5}>变更</Typography.Title>
+          <FormatterObj value={themeVarEditRecorderToObj(themeInfo.themeVarEditRecorder)}></FormatterObj>
+          <Typography.Title level={5}>应用变更的主题变量</Typography.Title>
+          <FormatterObj value={themeVarToObj(editedThemeVar)}></FormatterObj>
         </Typography>
       )
     },
@@ -36,12 +38,12 @@ export const ThemeContent: FC<ThemeContentProps> = props => {
       key: '2',
       children: (
         <Typography>
-          <Typography.Title>主题映射</Typography.Title>
-          <Typography.Text>主题映射</Typography.Text>
-          <Typography.Title>变更</Typography.Title>
-          <Typography.Text>主题映射</Typography.Text>
-          <Typography.Title>应用变更的主题映射</Typography.Title>
-          <Typography.Text>主题映射</Typography.Text>
+          <Typography.Title level={5}>主题映射</Typography.Title>
+          <FormatterObj value={themeMapToObj(themeInfo.themeMap)}></FormatterObj>
+          <Typography.Title level={5}>变更</Typography.Title>
+          <FormatterObj value={themeMapEditRecorderToObj(themeInfo.themeMapEditRecorder)}></FormatterObj>
+          <Typography.Title level={5}>应用变更的主题映射</Typography.Title>
+          <FormatterObj value={themeMapToObj(editedThemeMap)}></FormatterObj>
         </Typography>
       )
     },
@@ -50,17 +52,19 @@ export const ThemeContent: FC<ThemeContentProps> = props => {
       key: '3',
       children: (
         <Typography>
-          <Typography.Title>主题</Typography.Title>
-          <Typography.Text>主题</Typography.Text>
-          <Typography.Title>变更</Typography.Title>
-          <Typography.Text>主题</Typography.Text>
-          <Typography.Title>应用变更的主题</Typography.Title>
-          <Typography.Text>主题</Typography.Text>
+          <FormatterObj value={themeToObj(editedTheme)}></FormatterObj>
         </Typography>
       )
     }
   ]
-  return <Collapse items={items} style={props.style} className={props.className}></Collapse>
+  return <Collapse items={items} defaultActiveKey={items.map(item => item.key)} style={props.style} className={classNames('overflow-auto', props.className)}></Collapse>
 }
 
-// const MapRender
+/** 展示格式化对象 */
+const FormatterObj: FC<{ value: any }> = props => {
+  return (
+    <code className='max-h-[40vh] block overflow-auto whitespace-pre'>
+      {JSON.stringify(props.value, null, 2)}
+    </code>
+  )
+}

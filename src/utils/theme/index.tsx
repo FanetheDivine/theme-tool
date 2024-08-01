@@ -8,6 +8,13 @@ export const { ThemeProvider, useTheme } = createTheme({
     ['@b', { desc: '主题元@b', value: '#FFFFFF' }]
   ]),
   themeMap: new Map([
-    ['example', { desc: 'example', value: ['t', ['@a', '@b']] }]
+    ['example', { desc: 'example', value: ['t', ['@a', '@b']] }],
+    [
+      'children',
+      {
+        desc: 'children',
+        children: new Map([['sub', { desc: 'sub', value: '@b' }]])
+      }
+    ]
   ])
 })
