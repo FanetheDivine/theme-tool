@@ -216,7 +216,7 @@ export function isProperty<T>(value: Property<T> | SubTheme<T>): value is Proper
   return 'value' in value
 }
 
-/** 从属性映射的`value`获取具体值 */
+/** 从属性映射的`value`获取具体值.可以获取拓展主题元名称的值 */
 export function getValue<T>(themeVar: ThemeVar<T>, value: PropertyMapValue): PropertyValue<T> {
   if (Array.isArray(value)) {
     return value.map(v => getValue(themeVar, v))
