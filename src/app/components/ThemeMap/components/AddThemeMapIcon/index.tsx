@@ -1,5 +1,5 @@
 import { getEditedThemeMap, getEditedThemeVar } from "@/lib/Theme"
-import { themeMapHas } from "@/lib/Theme/ThemeMap"
+import { getThemeMapByKey } from "@/lib/Theme/ThemeMap"
 import { BaseStringValue } from "@/utils/BaseStringValue"
 import { NumberValue } from "@/utils/NumberValue"
 import { useTheme } from "@/utils/theme"
@@ -77,7 +77,7 @@ export const AddThemeMapIcon: FC<AddThemeMapIconProps> = props => {
               { required: true, message: '请填写映射名' },
               {
                 validator: async (_, name) => {
-                  if (themeMapHas(editedThemeMap, getThemeMapKey(name))) {
+                  if (getThemeMapByKey(editedThemeMap, getThemeMapKey(name))) {
                     throw new Error('映射名称重复')
                   }
                 }
