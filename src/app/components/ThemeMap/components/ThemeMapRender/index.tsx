@@ -86,39 +86,11 @@ const PropertyMapValueRender: FC<PropertyMapValueRenderProps> = props => {
   const { themeInfo } = useTheme()
   if (!themeInfo) return null
   const editedThemeVar = getEditedThemeVar(themeInfo.themeVar, themeInfo.themeVarEditRecorder)
-  const { value, onChange } = props
-  if (typeof value === 'number') {
-    return (
-      <>
-        {props.text}
-        <NumberValue className='block' value={value} onChange={onChange}></NumberValue>
-      </>
-    )
-  } else if (Array.isArray(value)) {
-    const content = (
-      <div className='flex flex-col'>
-        <Divider className="my-1"></Divider>
-        {
-          value.map((v, index) => {
-            return (
-              <Fragment key={index}>
-                <PropertyMapValueRender value={v} onChange={newVal => onChange(value.with(index, newVal))}></PropertyMapValueRender>
-                <Divider className='my-1'></Divider>
-              </Fragment>
-            )
-          })
-        }
-      </div>
-    )
-    return (
-      <Popover trigger={'click'} content={content} placement='left'>
-        <div className='flex items-center cursor-pointer text-sm'>
-          <LeftOutlined></LeftOutlined>
-          <span className='flex-auto text-center'>{props.text ? `${props.text}(数组)` : '数组[...]'}</span>
-        </div>
-      </Popover>
-    )
-  } else if (typeof value === 'string') {
+  const { onChange } = props
+  /** 统一使用这个变量控制渲染 在props.value指示主题元时对其进行变更 */
+  const renderInfo = { value: props.value, text: props.text }
+  if (typeof renderInfo.value === 'string') {
+    const { value } = renderInfo
     const info = getInfoFromExtendThemeItemName(value)
     const commonString = (
       <>
@@ -154,8 +126,43 @@ const PropertyMapValueRender: FC<PropertyMapValueRenderProps> = props => {
         }
       }
     } else {
-      return <PropertyMapValueRender value={themeItemValue} text={value} onChange={onChange} />
+      renderInfo.text = value
+      renderInfo.value = themeItemValue
     }
+  }
+  if (typeof renderInfo.value === 'number') {
+    const { value,text } = renderInfo
+    return (
+      <>
+        {text}
+        <NumberValue className='block' value={value} onChange={onChange}></NumberValue>
+      </>
+    )
+  } else if (Array.isArray(renderInfo.value)) {
+    const { value,text } = renderInfo
+    const content = (
+      <div className='flex flex-col'>
+        <Divider className="my-1"></Divider>
+        {
+          value.map((v, index) => {
+            return (
+              <Fragment key={index}>
+                <PropertyMapValueRender value={v} onChange={newVal => onChange(value.with(index, newVal))}/>
+                <Divider className='my-1'></Divider>
+              </Fragment>
+            )
+          })
+        }
+      </div>
+    )
+    return (
+      <Popover trigger={'click'} content={content} placement='left'>
+        <div className='flex items-center cursor-pointer text-sm'>
+          <LeftOutlined></LeftOutlined>
+          <span className='flex-auto text-center'>{text ? `${text}(数组)` : '数组[...]'}</span>
+        </div>
+      </Popover>
+    )
   }
 }
 
