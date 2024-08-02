@@ -225,7 +225,11 @@ export function getEditedThemeMap(themeMap: ThemeMap, themeMapEditRecorder: Them
           }
           case 'change':
           case 'add': {
-            currentThemeMap.set(key, record.value)
+            if (isPropertyMap(record.value)) {
+              currentThemeMap.set(key, record.value)
+            } else {
+              currentThemeMap.set(key, { desc: record.value.desc, children: copy(record.value.children) })
+            }
             break
           }
           case 'valueChange': {
