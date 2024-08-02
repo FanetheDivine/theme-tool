@@ -255,5 +255,5 @@ export function getTheme<T>(themeVar: ThemeVar<T>, themeMap: ThemeMap): Theme<T>
 /** 获取一个颜色指定色阶和透明度的版本 */
 export function getDerivedColor(color: string, level: number | null, opacity: number | null) {
   const colors = generate(color)
-  return TinyColor2(colors[level ?? 5]).setAlpha((opacity ?? 5) / 100).toRgbString()
+  return TinyColor2(colors[level ?? 5]).setAlpha((opacity ?? 100) / 100).toRgbString()
 }
