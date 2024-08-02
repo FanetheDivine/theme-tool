@@ -6,7 +6,7 @@ import classNames from "classnames";
 import { Divider, Tooltip, Typography, } from "antd";
 import { ThemeItemValueRender } from "@/app/components/ThemeVar/components/ThemeItemValueRender";
 import { getEditedThemeVar, isEditedThemeItem, isOriginThemeItem } from "@/lib/Theme";
-import { EditThemeVarButton } from "./components/EditThemeVarButton";
+import { DeletedThemeItemButton } from "./components/DeletedThemeItemButton";
 import { InfoCircleOutlined, UndoOutlined } from "@ant-design/icons";
 import { DeleteThemeItemIcon } from "./components/DeleteThemeItemIcon";
 import { AddThemeItemButton } from "./components/AddThemeItemIcon";
@@ -43,7 +43,7 @@ export const ThemeVar: FC<ThemeVarProps> = props => {
           <AddThemeItemButton className='text-2xl' />
         </div>
       </div>
-      <EditThemeVarButton></EditThemeVarButton>
+      <DeletedThemeItemButton></DeletedThemeItemButton>
     </div>
   )
 }
