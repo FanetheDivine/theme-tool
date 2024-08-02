@@ -388,23 +388,35 @@ import { ThemeProvider } from "@/utils/theme";
 ![img](./source/images/themeContent/content.png)
 ### 展示和变更主题变量
 主题变量使用组件`@/app/ThemeVar`进行展示  
-#### 主题变量的展示
-基础类型使用上述的两种组件进行展示 嵌套的则使用侧边卡片  
+#### 主题变量的展示和变更
+基础类型使用上述的两种组件进行展示 嵌套的则使用侧边卡片.  
+主题元可以直接变更描述或值,也可以撤回变更.    
+主题元名称旁边还提供删除按钮,主题元列表下方提供新增按钮.
 ![img](./source/images/themeVar/common.png)  
-#### 主题元的变更
-可以直接变更主题变量的描述和值 也可以直接撤回  
 ![img](./source/images/themeVar/change.png)  
-#### 主题变量的变更
-点击编辑主题按钮后 可以增删主题  
-![img](./source/images/themeVar/edit.png)  
-##### 删除和撤回
-撤回功能和主题展示界面一致.  
-![img](./source/images/themeVar/del_undo.png)  
-删除变量后会单独展示 也可以撤销删除  
+##### 撤回删除  
+主题初始具有的主题元删除后会单独展示 可以撤销.  
 ![img](./source/images/themeVar/deleted.png)  
 ##### 新增
 点击新增按钮后 可以选择新增主题元.  
 ![img](./source/images/themeVar/add.png)  
 ![img](./source/images/themeVar/select.png)  
 ### 展示和变更主题映射
-## 主题的导出和导入
+主题映射使用组件`@/app/ThemeMap`进行展示  
+#### 主题映射的展示和变更
+基础类型使用上述的两种组件进行展示 嵌套的则使用侧边卡片.  
+映射可以直接变更描述或值,也可以撤回变更.    
+映射名称旁边还提供删除按钮  
+每个映射子映射列表都提供新增按钮.  
+![img](./source/images/themeMap/common1.png)  
+![img](./source/images/themeMap/common2.png)  
+![img](./source/images/themeMap/change.png)  
+#### 撤回删除
+来自初始主题映射的映射删除后会单独展示 可以撤销  
+![img](./source/images/themeMap/change.png)
+#### 新增
+新增窗口有多个选项  
+![img](./source/images/themeMap/add1.png)  
+![img](./source/images/themeMap/add2.png)  
+![img](./source/images/themeMap/add3.png)  
+![img](./source/images/themeMap/add4.png)  
