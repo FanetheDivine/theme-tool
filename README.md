@@ -355,8 +355,8 @@ import { ThemeProvider } from "@/utils/theme";
 * `getThemeVars`  
   `(themeVar: ThemeVar<T>, themeMap: ThemeMap)=>ThemeVars<T>`  
   取得主题变量
-* `getColor`  
-  `getColor(color: string, level: number | null, opacity: number | null)=>string`  
+* `getDerivedColor`  
+  `(color: string, level: number | null, opacity: number | null)=>string`  
   获取一个颜色指定色阶和透明度的版本
 ## 主题体系的展示和修改
 主题、映射需要按照层级结构分别展示,可以进行变更、体现变更.
