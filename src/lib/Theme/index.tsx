@@ -116,41 +116,41 @@ export function createTheme<T = never>(initThemeInfo?: InitThemeInfo<T>) {
 
       const themeMap = {
         /** 创建或替换key指示的具有下级结构的子映射 */
-        add: (themeMapEditRecorderKey: string, desc: string) => {
+        add: (themeMapKey: string, desc: string) => {
           setThemeMapEditRecorder(themeInfo => {
-            return addThemeMap(themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, desc)
+            return addThemeMap(themeInfo.themeMapEditRecorder, themeMapKey, desc)
           })
         },
         /** 创建或替换key指示的属性映射 */
-        addPropertyMap: (themeMapEditRecorderKey: string, value: PropertyMap) => {
+        addPropertyMap: (themeMapKey: string, value: PropertyMap) => {
           setThemeMapEditRecorder(themeInfo => {
-            return addThemeMapPropertyMap(themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, value)
+            return addThemeMapPropertyMap(themeInfo.themeMapEditRecorder, themeMapKey, value)
           })
         },
         /** 删除key指示的子映射 */
-        delete: (themeMapEditRecorderKey: string) => {
+        delete: (themeMapKey: string) => {
           setThemeMapEditRecorder(themeInfo => {
-            return deleteThemeMap(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapEditRecorderKey)
+            return deleteThemeMap(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapKey)
           })
         },
         /** 修改key指示的属性映射的值 */
-        changeValue: (themeMapEditRecorderKey: string, value: PropertyMapValue) => {
+        changeValue: (themeMapKey: string, value: PropertyMapValue) => {
           setThemeMapEditRecorder(themeInfo => {
-            return changeThemeMapValue(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, value)
+            return changeThemeMapValue(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapKey, value)
           })
         },
         /** 修改key指示的子映射的描述 */
-        changeDesc: (themeMapEditRecorderKey: string, desc: string) => {
+        changeDesc: (themeMapKey: string, desc: string) => {
           setThemeMapEditRecorder(themeInfo => {
-            return changeThemeMapDesc(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapEditRecorderKey, desc)
+            return changeThemeMapDesc(themeInfo.themeMap, themeInfo.themeMapEditRecorder, themeMapKey, desc)
           })
         },
         /** 撤销映射变更
-         * @param themeMapEditRecorderKey 通过映射索引寻找变更.不传会清空所有变更.
+         * @param themeMapKey 通过映射索引寻找变更.不传会清空所有变更.
          */
-        undo: (themeMapEditRecorderKey?: string) => {
+        undo: (themeMapKey?: string) => {
           setThemeMapEditRecorder(themeInfo => {
-            return undoThemeMapChange(themeInfo.themeMapEditRecorder, themeMapEditRecorderKey)
+            return undoThemeMapChange(themeInfo.themeMapEditRecorder, themeMapKey)
           })
         }
       }

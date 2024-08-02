@@ -1,6 +1,6 @@
 'use client'
 
-import { getColor, getEditedThemeMap, getEditedThemeVar, getInfoFromExtendThemeItemName, isPropertyMap, PropertyMapValue, ThemeMap } from "@/lib/Theme"
+import { getDerivedColor, getEditedThemeMap, getEditedThemeVar, getInfoFromExtendThemeItemName, isPropertyMap, PropertyMapValue, ThemeMap } from "@/lib/Theme"
 import { BaseStringValue } from "@/utils/BaseStringValue"
 import { NumberValue } from "@/utils/NumberValue"
 import { useTheme } from "@/utils/theme"
@@ -12,6 +12,7 @@ import tinycolor from "tinycolor2"
 import { UndoThemeMapIcon } from "../UndoThemeMapIcon"
 import { DeleteThemeMapIcon } from "../DeleteThemeMapIcon"
 import { isEditedThemeMap, isOriginThemeMap } from "@/lib/Theme/ThemeMap"
+import { AddThemeMapIcon } from "../AddThemeMapIcon"
 
 type ThemeMapRenderProps = {
   className?: string
@@ -67,6 +68,9 @@ const ThemeMapRenderInner: FC<ThemeMapRenderInnerProps> = props => {
           )
         })
       }
+      <div className='flex justify-center items-center'>
+        <AddThemeMapIcon className='text-xl' superKey={props.superKey} />
+      </div>
     </div>
   )
 }
@@ -129,7 +133,7 @@ const PropertyMapValueRender: FC<PropertyMapValueRenderProps> = props => {
     const themeItemValue = editedThemeVar.get(info.themeItemName)!.value
     if (typeof themeItemValue === 'string') {
       if (tinycolor(themeItemValue).isValid()) {
-        const derivedColor = getColor(themeItemValue, info.level, info.opacity)
+        const derivedColor = getDerivedColor(themeItemValue, info.level, info.opacity)
         return (
           <>
             {value}
@@ -162,8 +166,8 @@ const ThemeMapName: FC<{ name: string, themeMapkey: string }> = props => {
   return (
     <Typography.Title className='flex gap-2 items-end my-0' level={5}>
       <span className='text-xl'>{props.name}</span>
-      {/* {
-        !isOriginThemeMap(props.themeMapkey, themeInfo.themeVar, themeInfo.themeVarEditRecorder)
+      {
+        !isOriginThemeMap(props.themeMapkey, themeInfo.themeMap, themeInfo.themeMapEditRecorder)
           ? (
             <Tooltip title={'这个映射不在初始的主题映射中'}>
               <InfoCircleOutlined className='text-xs'></InfoCircleOutlined>
@@ -173,10 +177,10 @@ const ThemeMapName: FC<{ name: string, themeMapkey: string }> = props => {
       }
       <DeleteThemeMapIcon className='text-sm' themeMapKey={props.themeMapkey} />
       {
-        isEditedThemeMap(props.themeMapkey, themeInfo.themeVarEditRecorder)
-          ? <UndoThemeMapIcon themeMapKey={props.themeMapkey}/>
+        isEditedThemeMap(props.themeMapkey, themeInfo.themeMapEditRecorder)
+          ? <UndoThemeMapIcon themeMapKey={props.themeMapkey} />
           : null
-      } */}
+      }
     </Typography.Title>
   )
 }
