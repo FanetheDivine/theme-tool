@@ -5,7 +5,8 @@ import { createTheme } from "@/lib/Theme"
 export const { ThemeProvider, useTheme } = createTheme({
   themeVar: new Map([
     ['@a', { desc: '主题元@a', value: [1, 'a'] }],
-    ['@b', { desc: '主题元@b', value: '#FFFFFF' }]
+    ['@b', { desc: '主题元@b', value: '#FFFFFF' }],
+    ['@c', { desc: '主题元@c', value: 1 }]
   ]),
   themeMap: new Map([
     ['example', { desc: '示例', value: ['@a', '@b-G9-A90'] }],
@@ -13,7 +14,7 @@ export const { ThemeProvider, useTheme } = createTheme({
       'example1',
       {
         desc: '具有子结构的映射',
-        children: new Map([['sub', { desc: '子映射', value: 1 }]])
+        children: new Map([['sub', { desc: '子映射', value: '@c' }]])
       }
     ]
   ])
