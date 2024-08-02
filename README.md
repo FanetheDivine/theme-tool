@@ -348,6 +348,9 @@ import { ThemeProvider } from "@/utils/theme";
 * `isOriginThemeMap`  
   `(themeMapKey: string, themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder)=>boolean`  
   是否来自初始的主题映射
+* `getThemeMapByKey`
+  `(themeMap: ThemeMap, themeMapKey: string)=> PropertyMap | SubThemeMap | null`
+  从一个映射中获取`key`所指示的子映射
 ##### 主题相关
 * `getValue`  
   `(themeVar: ThemeVar<T>, value: PropertyMapValue)=> PropertyValue<T>`  

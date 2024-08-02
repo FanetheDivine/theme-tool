@@ -52,15 +52,15 @@ export function isPropertyMap(value: SubThemeMap | PropertyMap): value is Proper
   return 'value' in value
 }
 
-/** 判断`key`所指示的子映射是否被映射包含 */
-export function themeMapHas(themeMap: ThemeMap, themeMapKey: string): Boolean {
+/** 从一个映射中获取`key`所指示的子映射 */
+export function getThemeMapByKey(themeMap: ThemeMap, themeMapKey: string): PropertyMap | SubThemeMap | null {
   const keys = themeMapKey.split('.')
   let currentThemeMap: ThemeMap = themeMap
   for (let i = 0; i < keys.length; ++i) {
     const key = keys[i]
     if (i === keys.length - 1) {
       if (currentThemeMap.has(key)) {
-        return true
+        return currentThemeMap.get(key)!
       }
     } else if (currentThemeMap.has(key)) {
       const currentValue = currentThemeMap.get(key)!
@@ -73,7 +73,7 @@ export function themeMapHas(themeMap: ThemeMap, themeMapKey: string): Boolean {
       break
     }
   }
-  return false
+  return null
 }
 
 /** 创建当前变更的浅复制 */
@@ -99,7 +99,7 @@ export function addThemeMapPropertyMap(themeMapEditRecorder: ThemeMapEditRecorde
 /** 删除key指示的子映射.创建一个新变更反映此次变更. */
 export function deleteThemeMap(themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder, themeMapKey: string) {
   const newThemeMapEditRecorder = copyThemeMapEditRecorder(themeMapEditRecorder)
-  if (themeMapHas(themeMap, themeMapKey)) {
+  if (getThemeMapByKey(themeMap, themeMapKey)) {
     newThemeMapEditRecorder.set(themeMapKey, { type: 'delete' })
   } else {
     newThemeMapEditRecorder.delete(themeMapKey)
@@ -142,7 +142,7 @@ export function changeThemeMapValue(themeMap: ThemeMap, themeMapEditRecorder: Th
         break
       }
     }
-  } else if (themeMapHas(themeMap, themeMapKey)) {
+  } else if (getThemeMapByKey(themeMap, themeMapKey)) {
     newThemeMapEditRecorder.set(themeMapKey, { type: 'valueChange', value })
   }
   return newThemeMapEditRecorder
@@ -181,7 +181,7 @@ export function changeThemeMapDesc(themeMap: ThemeMap, themeMapEditRecorder: The
         break
       }
     }
-  } else if (themeMapHas(themeMap, themeMapKey)) {
+  } else if (getThemeMapByKey(themeMap, themeMapKey)) {
     newThemeMapEditRecorder.set(themeMapKey, { type: 'descChange', desc })
   }
   return newThemeMapEditRecorder
@@ -266,7 +266,7 @@ export function getEditedThemeMap(themeMap: ThemeMap, themeMapEditRecorder: Them
 /** 是否是被删除的映射 */
 export function isDeletedThemeMap(themeMapKey: string, themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder) {
   const editType = themeMapEditRecorder.get(themeMapKey)?.type
-  return editType === 'delete' || (themeMapHas(themeMap, themeMapKey) && editType === 'add')
+  return editType === 'delete' || (getThemeMapByKey(themeMap, themeMapKey) && editType === 'add')
 }
 
 /** 是否是被编辑的映射 */
@@ -278,5 +278,5 @@ export function isEditedThemeMap(themeMapKey: string, themeMapEditRecorder: Them
 /** 是否来自初始的主题映射 */
 export function isOriginThemeMap(themeMapKey: string, themeMap: ThemeMap, themeMapEditRecorder: ThemeMapEditRecorder) {
   const editType = themeMapEditRecorder.get(themeMapKey)?.type
-  return themeMapHas(themeMap, themeMapKey) && editType !== 'add'
+  return getThemeMapByKey(themeMap, themeMapKey) && editType !== 'add'
 }
